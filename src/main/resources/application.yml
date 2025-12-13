@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: fightingflow
+  datasource:
+    url: "jdbc:postgresql://db.wxxxyvbgzzybcmgmujll.supabase.co:5432/postgres"
+    username: "postgres"
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+combos:
+  search:
+    ignore-case: true
+  validation:
+    titleLengthRange: 3-40
+    damageRange: 1-9999
+    creatorLength: 3
+    difficultyRange: 0-5
+    gameLength: 5
+    controlTypeLength: 1
+    minMoves: 2
