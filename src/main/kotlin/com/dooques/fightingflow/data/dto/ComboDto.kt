@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Range
 import java.time.Instant
 
 data class ComboDto(
-    val id: Long = 0,
+    val id: Long? = 0,
 
     @field:Length(
         min = 3,
@@ -42,7 +42,7 @@ data class ComboDto(
     )
     val difficulty: Float = 0f,
     val likes: Int? = 0,
-    val tags: String? = null,
+    val tags: List<String>? = null,
     val private: Boolean = false,
 
     @Length(
@@ -62,15 +62,15 @@ data class ComboDto(
 )
 
 fun ComboDto.toEntity() = ComboEntity(
-    id = id,
+    id = id ?: 0,
     title = title,
     character = character,
     damage = damage,
     creator = creator,
     dateCreated = dateCreated,
     difficulty = difficulty,
-    likes = likes,
-    tags = tags,
+    likes = likes ?: 0,
+    tags = tags ?: emptyList(),
     private = private,
     game = game,
     controlType = controlType,

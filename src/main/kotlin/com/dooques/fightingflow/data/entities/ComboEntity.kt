@@ -14,7 +14,7 @@ import java.time.Instant
 data class ComboEntity (
     @Id
     @GeneratedValue(GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: Long? = 0,
     val title: String = "",
     val character: String = "",
     val damage: Int = 0,
@@ -23,7 +23,7 @@ data class ComboEntity (
     var dateCreated: Instant? = Instant.now(),
     val difficulty: Float = 0f,
     val likes: Int? = 0,
-    val tags: String? = null,
+    val tags: List<String>? = null,
     val private: Boolean = false,
     val game: String = "",
     var controlType: String = "",
@@ -31,7 +31,7 @@ data class ComboEntity (
 )
 
 fun ComboEntity.toDto() = ComboDto(
-    id = id,
+    id = id ?: 0,
     title = title,
     character = character,
     damage = damage,
@@ -39,7 +39,7 @@ fun ComboEntity.toDto() = ComboDto(
     dateCreated = dateCreated ?: Instant.now(),
     difficulty = difficulty,
     likes = likes ?: 0,
-    tags = tags,
+    tags = tags ?: emptyList(),
     private = private,
     game = game,
     controlType = controlType,

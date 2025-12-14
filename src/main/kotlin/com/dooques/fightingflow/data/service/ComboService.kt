@@ -18,9 +18,14 @@ class ComboService(
     init {
         println(quotesConfig)
     }
-    // Search Functions
 
-    fun getComboById(id: Long): ComboDto? =
+    /*
+    ---------------------------
+        Search Functions
+    ---------------------------
+    */
+
+    fun getComboById(id: Long): ComboDto =
         comboRepository.findById(id)
             .map { it.toDto() }
             .orElseThrow { Exceptions.ComboNotFoundException(id) }
@@ -35,18 +40,28 @@ class ComboService(
     fun getCombosByCharacter(character: String): List<ComboDto> =
         comboRepository.findByCharacter(character).map { it.toDto() }
 
-    // Action Functions
+    /*
+    ---------------------------
+        Action Functions
+    ---------------------------
+    */
 
     fun saveCombo(combo: ComboDto): ComboDto =
         comboRepository
             .save(combo.toEntity().apply { id = 0 })
             .toDto()
 
-    fun updateCombo(combo: ComboDto): ComboDto =
-        comboRepository
+    fun updateCombo(combo: ComboDto): ComboDto {
+        if (combo.id == null) throw Exceptions.ComboNotFoundException(0)
+        getComboById(combo.id)
+            .toEntity()
+        return comboRepository
             .save(combo.toEntity())
             .toDto()
+    }
 
-    fun deleteCombo(combo: ComboEntity) =
-        comboRepository.delete(combo)
+    fun deleteCombo(comboId: Long) {
+        val comboToDelete = getComboById(comboId).toEntity()
+        comboRepository.delete(comboToDelete)
+    }
 }
