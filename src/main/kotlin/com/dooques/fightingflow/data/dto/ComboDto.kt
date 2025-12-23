@@ -47,7 +47,7 @@ data class ComboDto(
 
     @Length(
         min = 5,
-        message = "Game must be between 1 and 5 characters long"
+        message = "Game must be at least 5 characters long"
     )
     val game: String = "",
 

@@ -16,8 +16,6 @@ class FightingFlowExceptionHandler {
         "message" to e.message
     )
 
-
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun onMoveNotFound(e: Exceptions.Move.MoveNotFoundException) = mapOf(

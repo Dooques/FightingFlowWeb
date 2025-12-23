@@ -61,24 +61,20 @@ class ComboController(
     @PutMapping
     fun putCombo(
         @Valid @RequestBody comboDto: ComboDto
-    ) {
+    ): ComboDto {
         val comboId = comboDto.id ?: throw FightingFlowExceptions.Combo.ComboNotFoundException(comboDto.id ?: 0)
         val combo = comboService.getComboById(comboId)
-        println(
-            """
+        println("""
             **************************************
             Updating Combo with id ${comboDto.id}
             Original Combo: $combo
             Updated Combo: $comboDto
-        """
-        )
-
-        val updatedCombo = comboService.updateCombo(comboDto)
-        println(
-            """Combo Updated: $updatedCombo
             **************************************
         """
         )
+
+        return comboService.updateCombo(comboDto)
+
     }
 
     @DeleteMapping("/{id}")

@@ -28,12 +28,12 @@ class FightingFlowExceptions {
 
     class Character {
         class InvalidCharacterException(
-            private val id: Long,
+            private val identifier: String,
             private val problems: Map<String, String>
-        ) : RuntimeException("Character $id is invalid: Invalid fields: $problems")
+        ) : RuntimeException("Character $identifier is invalid: Invalid fields: $problems")
 
-        class CharacterNotFoundException(private val id: Long) :
-            RuntimeException("The character with ID $id could not be found")
+        class CharacterNotFoundException(private val identifier: String) :
+            RuntimeException("The character with value $identifier could not be found")
 
         class NoCharactersFoundException : RuntimeException("No characters found")
     }
