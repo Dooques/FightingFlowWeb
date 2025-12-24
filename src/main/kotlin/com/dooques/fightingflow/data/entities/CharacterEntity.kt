@@ -1,6 +1,8 @@
 package com.dooques.fightingflow.data.entities
 
 import com.dooques.fightingflow.data.dto.CharacterDto
+import com.fasterxml.jackson.annotation.JsonInclude
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -11,6 +13,7 @@ import java.time.Instant
 
 @Entity
 @Table(name = "characters")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class CharacterEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,14 +21,18 @@ data class CharacterEntity(
     val name: String = "",
     @CreationTimestamp
     var dateCreated: Instant? = Instant.now(),
+    @Column(nullable = true)
     val imageId: Int? = 0,
-    val imageUri: String? = null,
+    @Column(nullable = true)
+    val imageUri: String? = "",
     val fightingStyle: String = "",
+    @Column(nullable = true)
     val combosById: List<String>? = emptyList(),
     val game: String = "",
     val controlType: String = "",
     val numpadNotation: Boolean? = false,
-    val uniqueMoves: String? = null,
+    @Column(nullable = true)
+    val uniqueMoves: String? = "",
     val mutable: Boolean? = false
 )
 

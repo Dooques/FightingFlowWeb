@@ -8,16 +8,30 @@ import org.springframework.stereotype.Service
 
 @Service
 class MoveService(private val moveRepository: MoveRepository) {
+
     fun getMove(name: String): MoveDto {
-        return moveRepository.findByName(name)?.toDto() ?: throw Exception("No Moves Found")
+        return moveRepository.findByName(name)
+            ?.toDto() ?: throw Exception("No Moves Found")
     }
-    fun getMoves(): List<MoveDto> {
-        return moveRepository.findAll().map(MoveEntity::toDto)
+
+    fun getMoveById(id: Long): List<MoveDto> {
+        return listOf(moveRepository.findById(id)
+            .map(MoveEntity::toDto)
+            .orElseThrow { Exception("No Moves Found") })
     }
+
+    fun getAllMoves(): List<MoveDto> {
+        return moveRepository.findAll()
+            .map(MoveEntity::toDto)
+    }
+
     fun getAllMovesByCharacter(character: String): List<MoveDto> {
-        return moveRepository.getAllMovesByCharacter(character).map(MoveEntity::toDto)
+        return moveRepository.getAllMovesByCharacter(character)
+            .map(MoveEntity::toDto)
     }
+
     fun getAllMovesByGame(game: String): List<MoveDto> {
-        return moveRepository.getAllMovesByGame(game).map(MoveEntity::toDto)
+        return moveRepository.getAllMovesByGame(game)
+            .map(MoveEntity::toDto)
     }
 }

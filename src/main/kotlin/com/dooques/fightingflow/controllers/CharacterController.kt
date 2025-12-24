@@ -6,6 +6,7 @@ import com.dooques.fightingflow.exceptions.FightingFlowExceptions
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -63,23 +64,49 @@ class CharacterController(
 
     @PutMapping
     fun putCharacters(
-        @Valid @RequestBody characterDto: CharacterDto
+        @RequestBody characterDto : CharacterDto
     ): CharacterDto {
         val characterId = characterDto.id ?: throw Exception("Character ID not found")
         val originalCharacter = characterService.getCharacterById(characterId)
 
+        if (originalCharacter == characterDto) {
+            throw FightingFlowExceptions.Character.InvalidCharacterException(
+                characterDto.name,
+                mapOf ("Invalid Change" to "No changes detected")
+            )
+        }
+
        return if (originalCharacter.name == characterDto.name) {
-           characterService.updateCharacter(characterDto)
+           val updatedCharacter = originalCharacter.copy(
+               imageId = characterDto.imageId?.takeIf { it != originalCharacter.imageId },
+               imageUri = characterDto.imageUri?.takeIf { it != originalCharacter.imageUri },
+               fightingStyle = characterDto.fightingStyle?.takeIf { it != originalCharacter.fightingStyle },
+               combosById = characterDto.combosById?.takeIf { it != originalCharacter.combosById },
+               game = characterDto.game?.takeIf { it != originalCharacter.game },
+               controlType = characterDto.controlType?.takeIf { it != originalCharacter.controlType },
+               numpadNotation = characterDto.numpadNotation?.takeIf { it != originalCharacter.numpadNotation },
+               uniqueMoves = characterDto.uniqueMoves?.takeIf { it != originalCharacter.uniqueMoves },
+           )
+
+           println("""
+            **************************************
+                Updating Combo with id ${characterDto.id}
+                Original Combo: $originalCharacter
+                Updated Combo: $characterDto
+            **************************************
+            """)
+
+           characterService.updateCharacter(updatedCharacter)
        } else {
            throw FightingFlowExceptions.Character.InvalidCharacterException(
                characterDto.name,
-               emptyMap()
+               mapOf ("name" to "No character found with that name")
            )
        }
     }
 
     @DeleteMapping("/{id}")
-    fun deleteCharacters(id: Long) {
+    fun deleteCharacters(@PathVariable id: Long) {
         characterService.deleteCharacter(id)
     }
 }

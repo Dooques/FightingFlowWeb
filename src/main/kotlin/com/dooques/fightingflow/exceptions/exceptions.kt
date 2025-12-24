@@ -4,8 +4,8 @@ class FightingFlowExceptions {
 
     class Combo {
         class InvalidComboException(
-            private val id: String,
-            private val problems: Map<String, String>
+            private val id: Long,
+            private val problems: MutableMap<String, Any>,
         ) : RuntimeException("Combo $id is invalid: Invalid fields: $problems")
 
         class ComboNotFoundException(private val id: Long) :
@@ -16,7 +16,7 @@ class FightingFlowExceptions {
 
     class Move {
         class InvalidMoveException(
-            private val id: Int,
+            private val id: Long,
             private val problems: Map<String, String>
         ) : RuntimeException("Move $id is invalid: Invalid fields: $problems")
 
@@ -28,9 +28,9 @@ class FightingFlowExceptions {
 
     class Character {
         class InvalidCharacterException(
-            private val identifier: String,
+            private val name: String,
             private val problems: Map<String, String>
-        ) : RuntimeException("Character $identifier is invalid: Invalid fields: $problems")
+        ) : RuntimeException("Character $name is invalid: Invalid fields: $problems")
 
         class CharacterNotFoundException(private val identifier: String) :
             RuntimeException("The character with value $identifier could not be found")
@@ -40,7 +40,7 @@ class FightingFlowExceptions {
 
     class User {
         class InvalidUserException(
-            private val id: String,
+            private val id: Long,
             private val problems: Map<String, String>
         ) : RuntimeException("User $id is invalid: Invalid fields: $problems")
 

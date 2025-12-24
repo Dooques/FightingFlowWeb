@@ -29,4 +29,20 @@ class FightingFlowExceptionHandler {
         "errorCode" to "CHARACTER_NOT_FOUND",
         "message" to e.message
     )
+
+    @ExceptionHandler(
+        org.springframework.http.converter.HttpMessageNotReadableException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun invalidCharacterException(
+        e: org.springframework.web.bind.MethodArgumentNotValidException
+    ): Map<String, Any> {
+        val problems = mutableMapOf<String, String?>()
+        e.bindingResult.allErrors.forEach { error ->
+            val fieldName = (error as org.springframework.validation.FieldError).field
+            val errorMessage = error.defaultMessage
+            problems[fieldName] = errorMessage
+        }
+
+        return mapOf("errorCode" to "INVALID_CHARACTER", "message" to problems)
+    }
 }
