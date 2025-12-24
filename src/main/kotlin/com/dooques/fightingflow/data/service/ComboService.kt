@@ -15,10 +15,6 @@ class ComboService(
     private val quotesConfig: DatabaseConfig.ValidationConfig
 ) {
 
-    init {
-        println(quotesConfig)
-    }
-
     /*
     ---------------------------
         Search Functions
@@ -28,7 +24,7 @@ class ComboService(
     fun getComboById(id: Long): ComboDto =
         comboRepository.findById(id)
             .map { it.toDto() }
-            .orElseThrow { Exceptions.ComboNotFoundException(id) }
+            .orElseThrow { Exceptions.NoComboFoundException(id) }
 
     fun getAllCombos(): List<ComboDto> =
         comboRepository.findAll().map { it.toDto() }
@@ -52,7 +48,7 @@ class ComboService(
             .toDto()
 
     fun updateCombo(combo: ComboDto): ComboDto {
-        if (combo.id == null) throw Exceptions.ComboNotFoundException(0)
+        if (combo.id == null) throw Exceptions.NoComboFoundException(0)
         getComboById(combo.id)
             .toEntity()
         return comboRepository

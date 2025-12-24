@@ -77,26 +77,18 @@ class CharacterController(
         }
 
        return if (originalCharacter.name == characterDto.name) {
-           val updatedCharacter = originalCharacter.copy(
-               imageId = characterDto.imageId?.takeIf { it != originalCharacter.imageId },
-               imageUri = characterDto.imageUri?.takeIf { it != originalCharacter.imageUri },
-               fightingStyle = characterDto.fightingStyle?.takeIf { it != originalCharacter.fightingStyle },
-               combosById = characterDto.combosById?.takeIf { it != originalCharacter.combosById },
-               game = characterDto.game?.takeIf { it != originalCharacter.game },
-               controlType = characterDto.controlType?.takeIf { it != originalCharacter.controlType },
-               numpadNotation = characterDto.numpadNotation?.takeIf { it != originalCharacter.numpadNotation },
-               uniqueMoves = characterDto.uniqueMoves?.takeIf { it != originalCharacter.uniqueMoves },
+           characterService.updateCharacter(
+               originalCharacter.copy(
+                   imageId = characterDto.imageId?.takeIf { it != originalCharacter.imageId },
+                   imageUri = characterDto.imageUri?.takeIf { it != originalCharacter.imageUri },
+                   fightingStyle = characterDto.fightingStyle?.takeIf { it != originalCharacter.fightingStyle },
+                   combosById = characterDto.combosById?.takeIf { it != originalCharacter.combosById },
+                   game = characterDto.game?.takeIf { it != originalCharacter.game },
+                   controlType = characterDto.controlType?.takeIf { it != originalCharacter.controlType },
+                   numpadNotation = characterDto.numpadNotation?.takeIf { it != originalCharacter.numpadNotation },
+                   uniqueMoves = characterDto.uniqueMoves?.takeIf { it != originalCharacter.uniqueMoves },
+               )
            )
-
-           println("""
-            **************************************
-                Updating Combo with id ${characterDto.id}
-                Original Combo: $originalCharacter
-                Updated Combo: $characterDto
-            **************************************
-            """)
-
-           characterService.updateCharacter(updatedCharacter)
        } else {
            throw FightingFlowExceptions.Character.InvalidCharacterException(
                characterDto.name,

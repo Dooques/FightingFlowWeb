@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import java.time.Instant
 
 @Entity
 @Table(name = "moves")
@@ -15,6 +17,8 @@ data class MoveEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     val name: String,
+    @CreationTimestamp
+    val dateCreated: Instant? = Instant.now(),
     val notation: String,
     val moveType: String,
     val character: String,

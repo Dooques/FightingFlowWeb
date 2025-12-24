@@ -2,51 +2,87 @@ package com.dooques.fightingflow.exceptions
 
 class FightingFlowExceptions {
 
+    /*
+    ---------------------------
+    Open Exceptions
+    ---------------------------
+     */
+
+    open class InvalidItemException(
+        type: String,
+        id: Any,
+        problems: Map<String, String>
+        ) : RuntimeException("Invalid item $type for id $id with these problems: $problems")
+
+    open class NoItemFoundException(
+        private val type: String,
+        private val id: Long
+    ) : RuntimeException("No $type with ID $id could not be found")
+
+    open class NoItemsFoundException(type: String) : RuntimeException("No ${type}s found")
+
+    open class ItemAlreadyExists(type: String) : RuntimeException("$type already exists")
+
+    /*
+    ---------------------------
+    Typed Exception Classes
+    ---------------------------
+     */
+
     class Combo {
+
         class InvalidComboException(
             private val id: Long,
-            private val problems: MutableMap<String, Any>,
-        ) : RuntimeException("Combo $id is invalid: Invalid fields: $problems")
+            private val problems: Map<String, String>,
+        ) : InvalidItemException("combo", id, problems)
 
-        class ComboNotFoundException(private val id: Long) :
-            RuntimeException("The combo with ID $id could not be found")
+        class NoComboFoundException(id: Long) :
+            NoItemFoundException("combo", id)
 
-        class NoCombosFoundException : RuntimeException("No combos found")
+        class NoCombosFoundException : NoItemsFoundException("combo")
+
+        class ComboAlreadyExists : ItemAlreadyExists("combo")
     }
 
     class Move {
         class InvalidMoveException(
             private val id: Long,
-            private val problems: Map<String, String>
-        ) : RuntimeException("Move $id is invalid: Invalid fields: $problems")
+            private val problems: Map<String, String>,
+        ) : InvalidItemException("move", id, problems)
 
-        class MoveNotFoundException(private val id: Long) :
-            RuntimeException("The move with ID $id could not be found")
+        class NoMoveFoundException(id: Long) :
+            NoItemFoundException("move", id)
 
-        class NoMovesFoundException : RuntimeException("No moves found")
+        class NoMovesFoundException : NoItemsFoundException("move")
+
+        class MoveAlreadyExistsException : ItemAlreadyExists("move")
     }
 
     class Character {
         class InvalidCharacterException(
-            private val name: String,
-            private val problems: Map<String, String>
-        ) : RuntimeException("Character $name is invalid: Invalid fields: $problems")
+            private val id: String,
+            private val problems: Map<String, String>,
+        ) : InvalidItemException("character", id, problems)
 
-        class CharacterNotFoundException(private val identifier: String) :
-            RuntimeException("The character with value $identifier could not be found")
+        class NoCharacterFoundException(id: Long) :
+            NoItemFoundException("character", id)
 
-        class NoCharactersFoundException : RuntimeException("No characters found")
+        class NoCharactersFoundException : NoItemsFoundException("character")
+
+        class CharacterAlreadyExists : ItemAlreadyExists("character")
     }
 
     class User {
         class InvalidUserException(
             private val id: Long,
-            private val problems: Map<String, String>
-        ) : RuntimeException("User $id is invalid: Invalid fields: $problems")
+            private val problems: Map<String, String>,
+        ) : InvalidItemException("user", id, problems)
 
-        class UserNotFoundException(private val id: Long) :
-            RuntimeException("The user with ID $id could not be found")
+        class NoUserFoundException(id: Long) :
+            NoItemFoundException("user", id)
 
-        class NoUsersFoundException : RuntimeException("No users found")
+        class NoCombosFoundException : NoItemsFoundException("user")
+
+        class UserAlreadyExists : ItemAlreadyExists("user")
     }
 }
