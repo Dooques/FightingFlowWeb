@@ -33,14 +33,16 @@ class ComboController(
     @GetMapping
     fun getCombos(
         @RequestParam("id", required = false) id: Long? = null,
+        @RequestParam("title", required = false) title: String? = null,
         @RequestParam("user", required = false) user: String? = null,
         @RequestParam("character", required = false) character: String? = null,
     ): Any {
-        return if (user != null) {
-            comboService.getCombosByUser(user)
-        } else if (id != null) {
+        return if (id != null) {
             comboService.getComboById(id)
-            ComboDto()
+        } else if (title != null) {
+            comboService.getCombosByTitle(title)
+        } else if (user != null) {
+            comboService.getCombosByUser(user)
         } else if (character != null) {
             comboService.getCombosByCharacter(character)
         } else {
@@ -66,37 +68,7 @@ class ComboController(
     fun putCombo(
         @RequestBody comboDto: ComboDto
     ): ComboDto {
-        val comboId = comboDto.id ?: throw InvalidComboException(
-            comboDto.id ?: 0,
-            mapOf("id" to "Id is null or invalid"),
-        )
-        val originalCombo = comboService.getComboById(comboId)
-
-        if (originalCombo == comboDto) throw InvalidComboException(
-            comboDto.id,
-            mapOf("Invalid Change" to "No changes detected"),
-        )
-
-        println("""
-            **************************************
-                Updating Combo with id ${comboDto.id}
-                Original Combo: $originalCombo
-                Updated Combo: $comboDto
-            **************************************
-        """
-        )
-
-        val updatedCombo = comboDto.copy(
-            title = comboDto.title?.takeIf { it != originalCombo.title } ?: originalCombo.title,
-            damage = comboDto.damage?.takeIf { it != originalCombo.damage } ?: originalCombo.damage,
-            difficulty = comboDto.difficulty?.takeIf { it != originalCombo.difficulty } ?: originalCombo.difficulty,
-            tags = comboDto.tags?.takeIf { it != originalCombo.tags } ?: originalCombo.tags,
-            game = comboDto.game?.takeIf { it != originalCombo.game } ?: originalCombo.game,
-            controlType = comboDto.controlType?.takeIf { it != originalCombo.controlType } ?: originalCombo.controlType,
-            moves = comboDto.moves?.takeIf { it != originalCombo.moves } ?: originalCombo.moves,
-        )
-
-        return comboService.updateCombo(updatedCombo)
+        return comboService.updateCombo(comboDto)
     }
 
     @DeleteMapping("/{id}")

@@ -5,7 +5,7 @@ import com.dooques.fightingflow.data.dto.toEntity
 import com.dooques.fightingflow.data.entities.CharacterEntity
 import com.dooques.fightingflow.data.entities.toDto
 import com.dooques.fightingflow.data.repository.CharacterRepository
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions
+import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Character
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,32 +21,77 @@ class CharacterService(
         characterRepository.findById(id)
             .map { it.toDto() }
             .orElseThrow {
-                FightingFlowExceptions.Character.CharacterNotFoundException(id.toString())
+                Character.NoCharacterFoundException(id)
             }
 
     fun getCharacterByName(name: String): CharacterDto =
         characterRepository.findByName(name)?.toDto()
-            ?: throw FightingFlowExceptions.Character.CharacterNotFoundException(name)
+            ?: throw Character.NoCharacterFoundByNameException(name)
 
     fun getCharactersByGame(game: String): List<CharacterDto> =
         characterRepository.findAllByGame(game)
             .map(CharacterEntity::toDto)
+            .ifEmpty { throw Character.NoCharactersFoundException() }
 
     fun getCharacterByNameAndGame(name: String, game: String): List<CharacterDto> =
         characterRepository.findAllByGameAndName(game, name)
             .map(CharacterEntity::toDto)
+            .ifEmpty { throw Character.NoCharactersFoundException() }
 
     fun getCustomCharacters(): List<CharacterDto> =
         characterRepository.findAllByMutableTrue()
             .map(CharacterEntity::toDto)
+            .ifEmpty { throw Character.NoCharactersFoundException() }
 
     // Action Functions
 
-    fun saveCharacter(characterDto: CharacterDto): CharacterDto =
-        characterRepository.save(characterDto.toEntity().apply {id = 0}).toDto()
+    fun saveCharacter(characterDto: CharacterDto): CharacterDto {
+        // Search for existing characters, if none found, save new character.
+        runCatching { getCharacterByName(characterDto.name) }
+            .onFailure {
+                return characterRepository
+                    .save(characterDto.toEntity().apply { id = 0 })
+                    .toDto()
+            }
+            .onSuccess {
+                throw Character.CharacterAlreadyExists()
+            }
+       throw Character.PostFunctionFailedException("Failed without reason")
+    }
 
-    fun updateCharacter(characterDto: CharacterDto): CharacterDto =
-        characterRepository.save(characterDto.toEntity()).toDto()
+    fun updateCharacter(characterDto: CharacterDto): CharacterDto {
+        var updatedCharacter = CharacterDto()
+        runCatching {
+            val originalCharacter = getCharacterByName(characterDto.name)
+
+            if (originalCharacter == characterDto) {
+                throw Character.InvalidCharacterException(
+                    characterDto.name,
+                    mapOf ("Invalid Change" to "No changes detected")
+                )
+            }
+
+            updatedCharacter = originalCharacter.copy(
+                imageId = characterDto.imageId?.takeIf { it != originalCharacter.imageId },
+                imageUri = characterDto.imageUri?.takeIf { it != originalCharacter.imageUri },
+                fightingStyle = characterDto.fightingStyle?.takeIf { it != originalCharacter.fightingStyle },
+                combosById = characterDto.combosById?.takeIf { it != originalCharacter.combosById },
+                game = characterDto.game?.takeIf { it != originalCharacter.game },
+                controlType = characterDto.controlType?.takeIf { it != originalCharacter.controlType },
+                numpadNotation = characterDto.numpadNotation?.takeIf { it != originalCharacter.numpadNotation },
+                uniqueMoves = characterDto.uniqueMoves?.takeIf { it != originalCharacter.uniqueMoves },
+            )
+        }
+            .onSuccess {
+                characterRepository
+                    .save(updatedCharacter.toEntity())
+                    .toDto()
+            }
+            .onFailure {
+                throw Character.NoCharacterFoundByNameException(characterDto.name)
+            }
+        throw Character.PutFunctionFailedException("Failed without reason")
+    }
 
     fun deleteCharacter(characterId: Long) {
         val characterToDelete = getCharacterById(characterId).toEntity()
