@@ -2,7 +2,6 @@ package com.dooques.fightingflow.controllers
 
 import com.dooques.fightingflow.data.dto.MoveDto
 import com.dooques.fightingflow.data.service.MoveService
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Move
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

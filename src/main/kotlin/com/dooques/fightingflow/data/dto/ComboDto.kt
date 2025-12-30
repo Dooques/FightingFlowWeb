@@ -19,7 +19,6 @@ data class ComboDto(
     val title: String? = "",
 
     val character: String? = "",
-
     @field:Range(
         min = 1,
         max = 9999,
@@ -31,6 +30,7 @@ data class ComboDto(
         regexp = "^[a-zA-Z0-9_-]*$",
         message = "Creator can only contain alphanumeric characters, hyphens and underscores"
     )
+
     @NotEmpty(message = "Creator cannot be empty")
     var creator: String = "",
     var dateCreated: Instant? = Instant.now(),

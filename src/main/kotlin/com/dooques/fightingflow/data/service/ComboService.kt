@@ -5,17 +5,16 @@ import com.dooques.fightingflow.data.dto.ComboDto
 import com.dooques.fightingflow.data.dto.toEntity
 import com.dooques.fightingflow.data.entities.toDto
 import com.dooques.fightingflow.data.repository.ComboRepository
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Combo.InvalidComboException
+import com.dooques.fightingflow.exceptions.FightingFlowExceptions
+import com.dooques.fightingflow.exceptions.combo.ComboExceptions
 import com.google.api.client.util.Data
 import org.springframework.stereotype.Service
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Combo as Combo
 
 @Service
 class ComboService(
     private val comboRepository: ComboRepository,
     private val quotesConfig: DatabaseConfig.ValidationConfig
 ) {
-
     /*
     ---------------------------
         Search Functions
@@ -25,27 +24,27 @@ class ComboService(
     fun getComboById(id: Long): ComboDto =
         comboRepository.findById(id)
             .map { it.toDto() }
-            .orElseThrow { Combo.NoComboFoundException(id) }
-
-    fun getAllCombos(): List<ComboDto> =
-        comboRepository.findAll()
-            .map { it.toDto() }
-            .ifEmpty { throw Combo.NoCombosFoundException() }
+            .orElseThrow { ComboExceptions.NoComboFoundException(id) }
 
     fun getCombosByUser(creator: String): List<ComboDto> =
         comboRepository.getAllCombosByCreator(creator)
             .map { it.toDto()}
-            .ifEmpty { throw Combo.NoCombosFoundException() }
+            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
 
     fun getCombosByCharacter(character: String): List<ComboDto> =
         comboRepository.findByCharacter(character)
             .map { it.toDto() }
-            .ifEmpty { throw Combo.NoCombosFoundException() }
+            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
 
     fun getCombosByTitle(title: String): List<ComboDto> =
         comboRepository.findAllByTitle(title)
             .map { it.toDto() }
-            .ifEmpty { throw Combo.NoCombosFoundByTitleException(title) }
+            .ifEmpty { throw ComboExceptions.NoCombosFoundByTitleException(title) }
+
+    fun getAllCombos(): List<ComboDto> =
+        comboRepository.findAll()
+            .map { it.toDto() }
+            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
 
     /*
     ---------------------------
@@ -53,34 +52,33 @@ class ComboService(
     ---------------------------
     */
 
-    fun saveCombo(combo: ComboDto): ComboDto {
+    fun saveCombo(comboDto: ComboDto): ComboDto {
         runCatching {
-            comboRepository.findById(combo.id)
+            comboRepository.findById(comboDto.id ?: throw FightingFlowExceptions.InvalidIdException())
         }
             .onFailure {
                 comboRepository
-                    .save(combo.toEntity().apply { id = 0 })
+                    .save(comboDto.toEntity().apply { id = 0 })
                     .toDto()
             }
             .onSuccess {
-                throw Combo.ComboAlreadyExistsException()
+                throw ComboExceptions.ComboAlreadyExistsException()
             }
-        throw Combo.PostFunctionFailedException("Failed without reason")
+        throw ComboExceptions.PostFunctionFailedException("Failed without reason")
     }
 
     fun updateCombo(comboDto: ComboDto): ComboDto {
         var updatedCombo = ComboDto()
 
         runCatching {
-
-            val comboId = comboDto.id ?: throw InvalidComboException(
+            val comboId = comboDto.id ?: throw ComboExceptions.InvalidComboException(
                 comboDto.id ?: 0,
                 Data.mapOf("id" to "Id is null or invalid"),
             )
 
             val originalCombo = getComboById(comboId)
 
-            if (originalCombo == comboDto) throw InvalidComboException(
+            if (originalCombo == comboDto) throw ComboExceptions.InvalidComboException(
                 comboDto.id,
                 Data.mapOf("Invalid Change" to "No changes detected"),
             )
@@ -109,9 +107,9 @@ class ComboService(
                     .toDto()
             }
             .onFailure { result ->
-                throw Combo.PutFunctionFailedException(result.message ?: "Failed without reason.")
+                throw ComboExceptions.PutFunctionFailedException(result.message ?: "Failed without reason.")
             }
-        throw Combo.PutFunctionFailedException("Failed without reason")
+        throw ComboExceptions.PutFunctionFailedException("Failed without reason")
     }
 
     fun deleteCombo(comboId: Long) {
@@ -120,7 +118,7 @@ class ComboService(
             comboRepository.delete(comboToDelete)
         }
             .onFailure { result ->
-                throw Combo.DeleteFunctionFailedException(result.message ?: "Failed without reason.")
+                throw ComboExceptions.DeleteFunctionFailedException(result.message ?: "Failed without reason.")
             }
     }
 }

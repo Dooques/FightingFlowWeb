@@ -1,11 +1,14 @@
 package com.dooques.fightingflow.data.entities
 
-import com.dooques.fightingflow.data.dto.UserEntry
+import com.dooques.fightingflow.data.dto.UserDto
+import com.google.type.DateTime
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.CreationTimestamp
+import java.time.Instant
 
 @Entity
 @Table(name = "users")
@@ -16,14 +19,15 @@ data class UserEntity(
     val username: String = "",
     val email: String = "",
     var profilePic: String = "",
-    var dateCreated: String = "",
+    @CreationTimestamp
+    var dateCreated: Instant? = Instant.now(),
     var dob: String = "",
     var name: String = "",
     var likedCombos: List<String> = emptyList(),
     var characterList: List<String> = emptyList()
 )
 
-fun UserEntity.toDto() = UserEntry(
+fun UserEntity.toDto() = UserDto(
     id = id,
     username = username,
     email = email,

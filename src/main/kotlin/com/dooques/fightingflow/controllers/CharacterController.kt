@@ -2,7 +2,6 @@ package com.dooques.fightingflow.controllers
 
 import com.dooques.fightingflow.data.dto.CharacterDto
 import com.dooques.fightingflow.data.service.CharacterService
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Character
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,7 +24,7 @@ class CharacterController(
     init {
         println("""
             ******************************************** 
-            Character Controller Initialized
+                Character Controller Initialized
             ********************************************
             """.trimIndent())
     }

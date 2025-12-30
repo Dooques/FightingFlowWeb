@@ -6,7 +6,7 @@ import com.dooques.fightingflow.data.entities.MoveEntity
 import com.dooques.fightingflow.data.entities.toDto
 import com.dooques.fightingflow.data.repository.MoveRepository
 import com.dooques.fightingflow.exceptions.FightingFlowExceptions
-import com.dooques.fightingflow.exceptions.FightingFlowExceptions.Move
+import com.dooques.fightingflow.exceptions.move.MoveExceptions
 import org.springframework.stereotype.Service
 
 @Service
@@ -21,26 +21,26 @@ class MoveService(private val moveRepository: MoveRepository) {
     fun getMoveById(id: Long): MoveDto {
         val move = (moveRepository.findById(id)
             .map(MoveEntity::toDto))
-            .orElseThrow { Move.NoMoveFoundException(id) }
+            .orElseThrow { MoveExceptions.NoMoveFoundException(id) }
         return move
     }
 
     fun getAllMoves(): List<MoveDto> {
         return moveRepository.findAll()
             .map(MoveEntity::toDto)
-            .ifEmpty { throw Move.NoMovesFoundException() }
+            .ifEmpty { throw MoveExceptions.NoMovesFoundException() }
     }
 
     fun getAllMovesByCharacter(character: String): List<MoveDto> {
         return moveRepository.getAllMovesByCharacter(character)
             .map(MoveEntity::toDto)
-            .ifEmpty { throw Move.NoMovesFoundException() }
+            .ifEmpty { throw MoveExceptions.NoMovesFoundException() }
     }
 
     fun getAllMovesByGame(game: String): List<MoveDto> {
         return moveRepository.getAllMovesByGame(game)
             .map(MoveEntity::toDto)
-            .map { throw Move.NoMovesFoundException() }
+            .map { throw MoveExceptions.NoMovesFoundException() }
     }
 
     /*
@@ -57,9 +57,9 @@ class MoveService(private val moveRepository: MoveRepository) {
                 return moveRepository.save(move.toEntity()).toDto()
             }
             .onSuccess {
-                throw Move.MoveAlreadyExistsException()
+                throw MoveExceptions.MoveAlreadyExistsException()
             }
-        throw Move.PostFunctionFailedException("Failed without reason")
+        throw MoveExceptions.PostFunctionFailedException("Failed without reason")
     }
 
     fun updateMove(moveDto: MoveDto): MoveDto {
@@ -71,7 +71,7 @@ class MoveService(private val moveRepository: MoveRepository) {
             )
 
             if (originalMove == moveDto) {
-                throw Move.InvalidMoveException(
+                throw MoveExceptions.InvalidMoveException(
                     moveDto.id,
                     mapOf("Invalid Change" to "No changes detected")
                 )
@@ -89,9 +89,9 @@ class MoveService(private val moveRepository: MoveRepository) {
                     .toDto()
             }
             .onFailure { result ->
-                throw Move.PutFunctionFailedException(result.message ?: "Failed without reason.")
+                throw MoveExceptions.PutFunctionFailedException(result.message ?: "Failed without reason.")
             }
-        throw Move.PutFunctionFailedException("Failed without reason")
+        throw MoveExceptions.PutFunctionFailedException("Failed without reason")
     }
 
     fun deleteMove(id: Long) {
@@ -99,6 +99,6 @@ class MoveService(private val moveRepository: MoveRepository) {
             val move = getMoveById(id)
             moveRepository.delete(move.toEntity())
         }
-            .onFailure { throw Move.DeleteFunctionFailedException("Failed without reason.") }
+            .onFailure { throw MoveExceptions.DeleteFunctionFailedException("Failed without reason.") }
     }
 }
