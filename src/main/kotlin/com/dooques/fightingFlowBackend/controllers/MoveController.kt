@@ -38,7 +38,7 @@ class MoveController(
         return if (id != null) {
             moveService.getMoveById(id)
         } else if (character != null) {
-            moveService.getAllMovesByCharacter(character)
+            moveService.getAllMovesByFighter(character)
         } else if (game != null) {
             moveService.getAllMovesByGame(game)
         } else {

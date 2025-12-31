@@ -18,29 +18,41 @@ class MoveService(private val moveRepository: MoveRepository) {
     ---------------------------
     */
 
-    fun getMoveById(id: Long): MoveDto {
-        val move = (moveRepository.findById(id)
-            .map(MoveEntity::toDto))
-            .orElseThrow { MoveExceptions.NoMoveFoundException(id) }
-        return move
-    }
-
-    fun getAllMoves(): List<MoveDto> {
-        return moveRepository.findAll()
+    fun getMoveById(id: Long): MoveDto =
+        moveRepository.findById(id)
             .map(MoveEntity::toDto)
-            .ifEmpty { throw MoveExceptions.NoMovesFoundException() }
-    }
+            .orElseThrow {
+                val error = MoveExceptions.NoMoveFoundException(id)
+                println(error.message)
+                error
+            }
 
-    fun getAllMovesByCharacter(character: String): List<MoveDto> {
-        return moveRepository.getAllMovesByCharacter(character)
+    fun getAllMoves(): List<MoveDto> =
+        moveRepository.findAll()
             .map(MoveEntity::toDto)
-            .ifEmpty { throw MoveExceptions.NoMovesFoundException() }
-    }
+            .ifEmpty {
+                val error = MoveExceptions.NoMovesFoundException()
+                println(error.message)
+                throw error
+            }
+
+    fun getAllMovesByFighter(fighter: String): List<MoveDto> =
+         moveRepository.getAllMovesByFighter(fighter)
+            .map(MoveEntity::toDto)
+            .ifEmpty {
+                val error = MoveExceptions.NoMovesFoundException()
+                println(error.message)
+                throw error
+            }
 
     fun getAllMovesByGame(game: String): List<MoveDto> {
         return moveRepository.getAllMovesByGame(game)
             .map(MoveEntity::toDto)
-            .map { throw MoveExceptions.NoMovesFoundException() }
+            .ifEmpty {
+                val error = MoveExceptions.NoMovesFoundException()
+                println(error.message)
+                throw error
+            }
     }
 
     /*
@@ -49,17 +61,28 @@ class MoveService(private val moveRepository: MoveRepository) {
    ---------------------------
    */
 
-    fun postMove(move: MoveDto): MoveDto {
+    fun postMove(moveDto: MoveDto): MoveDto {
         runCatching {
-            getMoveById(move.id ?: throw FightingFlowExceptions.InvalidIdException())
+            getMoveById(moveDto.id ?: throw FightingFlowExceptions.InvalidIdException())
         }
             .onFailure {
-                return moveRepository.save(move.toEntity()).toDto()
+
+                println("""
+                **************************************
+                    Posting Move: $moveDto
+                **************************************
+                """)
+
+                return moveRepository.save(moveDto.toEntity()).toDto()
             }
             .onSuccess {
-                throw MoveExceptions.MoveAlreadyExistsException()
+                val error = MoveExceptions.MoveAlreadyExistsException()
+                println(error.message)
+                throw error
             }
-        throw MoveExceptions.PostFunctionFailedException("Failed without reason")
+        val error = MoveExceptions.PostFunctionFailedException("Failed without reason")
+        println(error.message)
+        throw error
     }
 
     fun updateMove(moveDto: MoveDto): MoveDto {
@@ -77,6 +100,13 @@ class MoveService(private val moveRepository: MoveRepository) {
                 )
             }
 
+            println("""
+            **************************************
+                Original Move: $originalMove
+                Updated Move: $moveDto
+            **************************************
+            """)
+
             updatedMove = moveDto.copy(
                 name = moveDto.name?.takeIf { it != originalMove.name } ?: originalMove.name,
                 notation = moveDto.notation?.takeIf { it != originalMove.notation } ?: originalMove.notation,
@@ -89,9 +119,13 @@ class MoveService(private val moveRepository: MoveRepository) {
                     .toDto()
             }
             .onFailure { result ->
-                throw MoveExceptions.PutFunctionFailedException(result.message ?: "Failed without reason.")
+                val error = MoveExceptions.PutFunctionFailedException(result.message ?: "Failed without reason.")
+                println(error.message)
+                throw error
             }
-        throw MoveExceptions.PutFunctionFailedException("Failed without reason")
+        val error = MoveExceptions.PutFunctionFailedException("Failed without reason")
+        println(error.message)
+        throw error
     }
 
     fun deleteMove(id: Long) {
@@ -99,6 +133,10 @@ class MoveService(private val moveRepository: MoveRepository) {
             val move = getMoveById(id)
             moveRepository.delete(move.toEntity())
         }
-            .onFailure { throw MoveExceptions.DeleteFunctionFailedException("Failed without reason.") }
+            .onFailure {
+                val error = MoveExceptions.DeleteFunctionFailedException("Failed without reason.")
+                println(error.message)
+                throw error
+            }
     }
 }

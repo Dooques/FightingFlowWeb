@@ -33,7 +33,7 @@ class ComboController(
         @RequestParam("id", required = false) id: Long? = null,
         @RequestParam("title", required = false) title: String? = null,
         @RequestParam("user", required = false) user: String? = null,
-        @RequestParam("character", required = false) character: String? = null,
+        @RequestParam("fighter", required = false) fighter: String? = null,
     ): Any {
         return if (id != null) {
             comboService.getComboById(id)
@@ -41,8 +41,8 @@ class ComboController(
             comboService.getCombosByTitle(title)
         } else if (user != null) {
             comboService.getCombosByUser(user)
-        } else if (character != null) {
-            comboService.getCombosByCharacter(character)
+        } else if (fighter != null) {
+            comboService.getCombosByFighter(fighter)
         } else {
             comboService.getAllCombos()
         }
@@ -55,7 +55,7 @@ class ComboController(
         println("""
             **************************************
                 Posting Combo: $comboDto
-                Combo created by ${comboDto.creator} with character ${comboDto.character} and moves: ${comboDto.moves}
+                Combo created by ${comboDto.creator} with fighter ${comboDto.fighter} and moves: ${comboDto.moves}
             **************************************
             """
         )

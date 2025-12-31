@@ -23,7 +23,7 @@ data class UserEntity(
     var dob: String = "",
     var name: String = "",
     var likedCombos: List<String> = emptyList(),
-    var characterList: List<String> = emptyList()
+    var fighterList: List<String> = emptyList()
 )
 
 fun UserEntity.toDto() = UserDto(
@@ -35,5 +35,5 @@ fun UserEntity.toDto() = UserDto(
     dob = dob,
     name = name,
     likedCombos = likedCombos,
-    characterList = characterList
+    fighterList = fighterList
 )

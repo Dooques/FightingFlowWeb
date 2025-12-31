@@ -1,7 +1,7 @@
 package com.dooques.fightingFlowBackend.controllers
 
-import com.dooques.fightingFlowBackend.data.dto.CharacterDto
-import com.dooques.fightingFlowBackend.data.service.CharacterService
+import com.dooques.fightingFlowBackend.data.dto.FighterDto
+import com.dooques.fightingFlowBackend.data.service.FighterService
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,65 +15,68 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
 @RestController
-@RequestMapping("/characters")
-class CharacterController(
-    private val characterService: CharacterService,
+@RequestMapping("/fighters")
+class FighterController(
+    private val fighterService: FighterService,
     private val restTemplate: RestTemplate,
 ) {
 
     init {
         println("""
             ******************************************** 
-                Character Controller Initialized
+                Fighter Controller Initialized
             ********************************************
             """.trimIndent())
     }
 
     @GetMapping
-    fun getCharacters(
+    fun getFighter(
         @RequestParam("id", required = false) id: Long? = null,
         @RequestParam("name", required = false) name: String? = null,
         @RequestParam("game", required = false) game: String? = null,
         @RequestParam("custom", required = false) custom: Boolean = false,
     ): Any {
         return if (custom) {
-            characterService.getCustomCharacters()
+            fighterService.getCustomFighters()
         } else if (id != null) {
-            characterService.getCharacterByName(id.toString())
+            fighterService.getFighterByName(id.toString())
         } else if (name != null) {
             if (game != null) {
-                characterService.getCharacterByNameAndGame(name, game)
+                fighterService.getFighterByNameAndGame(name, game)
             } else {
-                characterService.getCharacterByName(name)
+                fighterService.getFighterByName(name)
             }
         } else if (game != null) {
-            characterService.getCharactersByGame(game)
+            fighterService.getFightersByGame(game)
         } else {
-            characterService.getAllCharacters()
+            fighterService.getAllFighters()
         }
     }
 
     @PostMapping
-    fun postCharacters(
-        @Valid @RequestBody characterDto: CharacterDto
-    ): CharacterDto {
+    fun postFighter(
+        @Valid @RequestBody fighterDto: FighterDto
+    ): FighterDto {
         println("""
             ******************************************** 
-                Posting Character: $characterDto
-            ******************************************** 
+                Posting Fighter: $fighterDto
             """)
-        return characterService.saveCharacter(characterDto)
+        return fighterService.saveFighter(fighterDto)
     }
 
     @PutMapping
-    fun putCharacters(
-        @RequestBody characterDto : CharacterDto
-    ): CharacterDto {
-       return characterService.updateCharacter(characterDto)
+    fun putFighter(
+        @RequestBody fighterDto : FighterDto
+    ): FighterDto {
+        println("""
+            ******************************************** 
+                Updating Fighter: $fighterDto
+            """)
+       return fighterService.updateFighter(fighterDto)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteCharacters(@PathVariable id: Long) {
-        characterService.deleteCharacter(id)
+    fun deleteFighter(@PathVariable id: Long) {
+        fighterService.deleteFighter(id)
     }
 }

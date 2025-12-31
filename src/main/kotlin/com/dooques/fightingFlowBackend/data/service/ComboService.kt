@@ -24,27 +24,47 @@ class ComboService(
     fun getComboById(id: Long): ComboDto =
         comboRepository.findById(id)
             .map { it.toDto() }
-            .orElseThrow { ComboExceptions.NoComboFoundException(id) }
+            .orElseThrow {
+                val error = ComboExceptions.NoComboFoundException(id)
+                println(error.message)
+                error
+            }
 
     fun getCombosByUser(creator: String): List<ComboDto> =
         comboRepository.getAllCombosByCreator(creator)
             .map { it.toDto()}
-            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
+            .ifEmpty {
+                val error = ComboExceptions.NoCombosFoundException()
+                println(error.message)
+                throw error
+            }
 
-    fun getCombosByCharacter(character: String): List<ComboDto> =
-        comboRepository.findByCharacter(character)
+    fun getCombosByFighter(fighter: String): List<ComboDto> =
+        comboRepository.findByFighter(fighter)
             .map { it.toDto() }
-            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
+            .ifEmpty {
+                val error = ComboExceptions.NoCombosFoundException()
+                println(error.message)
+                throw error
+            }
 
     fun getCombosByTitle(title: String): List<ComboDto> =
         comboRepository.findAllByTitle(title)
             .map { it.toDto() }
-            .ifEmpty { throw ComboExceptions.NoCombosFoundByTitleException(title) }
+            .ifEmpty {
+                val error = ComboExceptions.NoCombosFoundByTitleException(title)
+                println(error.message)
+                throw error
+            }
 
     fun getAllCombos(): List<ComboDto> =
         comboRepository.findAll()
             .map { it.toDto() }
-            .ifEmpty { throw ComboExceptions.NoCombosFoundException() }
+            .ifEmpty {
+                val error = ComboExceptions.NoCombosFoundException()
+                println(error.message)
+                throw error
+            }
 
     /*
     ---------------------------
@@ -57,14 +77,25 @@ class ComboService(
             comboRepository.findById(comboDto.id ?: throw FightingFlowExceptions.InvalidIdException())
         }
             .onFailure {
-                comboRepository
+
+                println("""
+                **************************************
+                    Posting Combo: $comboDto
+                **************************************
+                """)
+
+                return comboRepository
                     .save(comboDto.toEntity().apply { id = 0 })
                     .toDto()
             }
             .onSuccess {
-                throw ComboExceptions.ComboAlreadyExistsException()
+                val error = ComboExceptions.ComboAlreadyExistsException()
+                println(error.message)
+                throw error
             }
-        throw ComboExceptions.PostFunctionFailedException("Failed without reason")
+        val error = ComboExceptions.PostFunctionFailedException("Failed without reason")
+        println(error.message)
+        throw error
     }
 
     fun updateCombo(comboDto: ComboDto): ComboDto {
@@ -85,7 +116,6 @@ class ComboService(
 
             println("""
             **************************************
-                Updating Combo with id ${comboDto.id}
                 Original Combo: $originalCombo
                 Updated Combo: $comboDto
             **************************************
@@ -118,7 +148,9 @@ class ComboService(
             comboRepository.delete(comboToDelete)
         }
             .onFailure { result ->
-                throw ComboExceptions.DeleteFunctionFailedException(result.message ?: "Failed without reason.")
+                val error = ComboExceptions.DeleteFunctionFailedException(result.message ?: "Failed without reason.")
+                println(error.message)
+                throw error
             }
     }
 }

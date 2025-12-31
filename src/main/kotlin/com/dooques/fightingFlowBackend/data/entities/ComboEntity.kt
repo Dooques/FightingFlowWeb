@@ -16,7 +16,7 @@ data class ComboEntity (
     @GeneratedValue(GenerationType.IDENTITY)
     var id: Long? = 0,
     val title: String = "",
-    val character: String = "",
+    val fighter: String = "",
     val damage: Int = 0,
     var creator: String = "",
     @CreationTimestamp
@@ -33,7 +33,7 @@ data class ComboEntity (
 fun ComboEntity.toDto() = ComboDto(
     id = id ?: 0,
     title = title,
-    character = character,
+    fighter = fighter,
     damage = damage,
     creator = creator,
     dateCreated = dateCreated ?: Instant.now(),

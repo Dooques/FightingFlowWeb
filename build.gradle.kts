@@ -26,13 +26,16 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    runtimeOnly("org.postgresql:postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.google.firebase:firebase-admin:9.2.0")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310") // Add this
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	// MySQL
+	runtimeOnly("com.mysql:mysql-connector-j")
+	implementation("com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.15.1")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation ("org.springframework.boot:spring-boot-starter-restclient-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")

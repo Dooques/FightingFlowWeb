@@ -2,21 +2,21 @@ package com.dooques.fightingFlowBackend.exceptions.character
 
 import com.dooques.fightingFlowBackend.exceptions.FightingFlowExceptions
 
-object CharacterExceptions {
-    class InvalidCharacterException(
+object FighterExceptions {
+    class InvalidFighterException(
         id: Long, problems: Map<String, Any>,
     ) : FightingFlowExceptions.InvalidItemException("character", id, problems)
 
-    class NoCharacterFoundException(id: Long) :
+    class NoFighterFoundException(id: Long) :
         FightingFlowExceptions.NoItemFoundException("character", id)
 
-    class NoCharacterFoundByNameException(name: String) :
+    class NoFighterFoundByNameException(name: String) :
         FightingFlowExceptions.NoItemFoundByNameException("character", name)
 
-    class NoCharactersFoundException :
+    class NoFightersFoundException :
         FightingFlowExceptions.NoItemsFoundException("character")
 
-    class CharacterAlreadyExistsException :
+    class FighterAlreadyExistsException :
         FightingFlowExceptions.ItemAlreadyExists("character")
 
     // Function Exceptions

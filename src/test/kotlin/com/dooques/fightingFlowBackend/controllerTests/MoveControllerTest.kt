@@ -37,7 +37,7 @@ class MoveControllerTest {
     @Test
     fun `getMoves should return character moves when character param provided`() {
         val character = "Jin"
-        whenever(moveService.getAllMovesByCharacter(character)).thenReturn(listOf(MoveDto(name = "Electric", character = character)))
+        whenever(moveService.getAllMovesByFighter(character)).thenReturn(listOf(MoveDto(name = "Electric", fighter = character)))
 
         mockMvc.perform(get("/moves").param("character", character))
             .andExpect(status().isOk)
@@ -55,7 +55,7 @@ class MoveControllerTest {
 
     @Test
     fun `postMoves should return 400 when notation is too long`() {
-        val invalidMove = MoveDto(name = "Punch", notation = "VERYLONGNOTATION", character = "Ryu")
+        val invalidMove = MoveDto(name = "Punch", notation = "VERYLONGNOTATION", fighter = "Ryu")
 
         mockMvc.perform(post("/moves")
             .contentType(MediaType.APPLICATION_JSON)

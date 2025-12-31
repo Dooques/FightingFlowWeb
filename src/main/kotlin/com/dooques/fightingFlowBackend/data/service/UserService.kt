@@ -22,12 +22,20 @@ class UserService(
     fun getAllUsers(): List<UserDto> =
         userRepository.findAll()
             .map { it.toDto() }
-            .ifEmpty { throw UserExceptions.NoUsersFoundException() }
+            .ifEmpty {
+                val error = UserExceptions.NoUsersFoundException()
+                println(error.message)
+                throw error
+            }
 
     fun getUserById(id: Long): UserDto =
         userRepository.findById(id)
             .map { it.toDto() }
-            .orElseThrow { UserExceptions.NoUserFoundException(id) }
+            .orElseThrow {
+                val error = UserExceptions.NoUserFoundException(id)
+                println(error.message)
+                throw error
+            }
 
     /*
     ---------------------------
@@ -49,10 +57,14 @@ class UserService(
             }
             .onSuccess {
                 println("Existing user found, throwing exception.")
-                throw UserExceptions.UserAlreadyExists()
+                val error = UserExceptions.UserAlreadyExists()
+                println(error.message)
+                throw error
             }
         println("Function executed unsuccessfully, throwing exception.")
-        throw UserExceptions.PostFunctionFailedException("Failed without reason")
+        val error = UserExceptions.PostFunctionFailedException("Failed without reason")
+        println(error.message)
+        throw error
     }
 
     fun updateUser(userDto: UserDto): UserDto {
@@ -74,7 +86,7 @@ class UserService(
                 profilePic = userDto.profilePic?.takeIf { it != originalUser.profilePic } ?: originalUser.profilePic,
                 name = userDto.name?.takeIf { it != originalUser.name } ?: originalUser.name,
                 likedCombos = userDto.likedCombos?.takeIf { it != originalUser.likedCombos } ?: originalUser.likedCombos,
-                characterList = userDto.characterList?.takeIf { it != originalUser.characterList } ?: originalUser.characterList
+                fighterList = userDto.fighterList?.takeIf { it != originalUser.fighterList } ?: originalUser.fighterList
             )
 
         }
@@ -84,11 +96,15 @@ class UserService(
                     .toDto()
             }
             .onFailure { result ->
-                throw ComboExceptions.PutFunctionFailedException(
+                val error = ComboExceptions.PutFunctionFailedException(
                     result.message ?: "Failed without reason."
                 )
+                println(error.message)
+                throw error
             }
-        throw ComboExceptions.PutFunctionFailedException("Failed without reason")
+        val error = ComboExceptions.PutFunctionFailedException("Failed without reason")
+        println(error.message)
+        throw error
     }
 
     fun deleteUser(userId: Long) {
@@ -96,6 +112,10 @@ class UserService(
             val userToDelete = getUserById(userId).toEntity()
             userRepository.delete(userToDelete)
         }
-            .onFailure { throw UserExceptions.DeleteFunctionFailedException("Failed without reason.") }
+            .onFailure {
+                val error = UserExceptions.DeleteFunctionFailedException("Failed without reason.")
+                println(error.message)
+                throw error
+            }
     }
 }

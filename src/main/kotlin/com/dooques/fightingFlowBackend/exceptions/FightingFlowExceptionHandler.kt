@@ -35,4 +35,11 @@ class FightingFlowExceptionHandler {
 
         return ResponseEntity.badRequest().body(map)
     }
+
+    @ExceptionHandler(java.lang.IllegalArgumentException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun onIllegalArgumentException(e: IllegalArgumentException) = mapOf(
+        "errorCode" to "INVALID_ARGUMENT",
+        "message" to e.message
+    )
 }

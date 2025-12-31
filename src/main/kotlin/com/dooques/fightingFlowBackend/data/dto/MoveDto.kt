@@ -13,7 +13,7 @@ data class MoveDto(
     @field:Length(min = 3, max = 10, message = "Move type must be between 3 and 10 characters long")
     val moveType: String? = "",
     @field:Length(min = 3, max = 20, message = "Character must be between 3 and 20 characters long")
-    val character: String? = "",
+    val fighter: String? = "",
     @field:Length(min = 5, max = 20, message = "Game must be between 5 and 20 characters long")
     val game: String? = null,
     val controlTypeSF: SF6ControlType? = SF6ControlType.Invalid
@@ -23,7 +23,7 @@ fun MoveDto.toEntity() = MoveEntity(
     name = name ?: "",
     notation = notation ?: "",
     moveType = moveType ?: "",
-    character = character ?: "",
+    fighter = fighter ?: "",
     game = game,
     controlTypeSF = controlTypeSF
 )

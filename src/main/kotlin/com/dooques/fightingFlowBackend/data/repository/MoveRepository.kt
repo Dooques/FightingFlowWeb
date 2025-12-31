@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface MoveRepository : JpaRepository<MoveEntity, Long> {
     fun findByName(name: String): MoveEntity?
-    fun getAllMovesByCharacter(character: String): List<MoveEntity>
+    fun getAllMovesByFighter(character: String): List<MoveEntity>
     fun getAllMovesByGame(game: String): List<MoveEntity>
 }

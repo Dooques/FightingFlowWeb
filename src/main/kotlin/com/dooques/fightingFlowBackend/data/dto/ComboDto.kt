@@ -17,7 +17,7 @@ data class ComboDto(
         message = "Title must be between 5 and 40 characters long")
     val title: String? = "",
 
-    val character: String? = "",
+    val fighter: String? = "",
     @field:Range(
         min = 1,
         max = 9999,
@@ -63,7 +63,7 @@ data class ComboDto(
 fun ComboDto.toEntity() = ComboEntity(
     id = id ?: 0,
     title = title ?: "",
-    character = character ?: "",
+    fighter = fighter ?: "",
     damage = damage ?: 0,
     creator = creator,
     dateCreated = dateCreated,

@@ -1,9 +1,9 @@
 package com.dooques.fightingFlowBackend.controllerTests
 
-import com.dooques.fightingFlowBackend.controllers.CharacterController
-import com.dooques.fightingFlowBackend.data.dto.CharacterDto
-import com.dooques.fightingFlowBackend.data.service.CharacterService
-import com.dooques.fightingFlowBackend.exceptions.character.CharacterExceptions
+import com.dooques.fightingFlowBackend.controllers.FighterController
+import com.dooques.fightingFlowBackend.data.dto.FighterDto
+import com.dooques.fightingFlowBackend.data.service.FighterService
+import com.dooques.fightingFlowBackend.exceptions.character.FighterExceptions
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -18,14 +18,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.web.client.RestTemplate
 
-@WebMvcTest(CharacterController::class)
-class CharacterControllerTest {
+@WebMvcTest(FighterController::class)
+class FighterControllerTest {
 
     @Autowired
     private lateinit var mockMvc: MockMvc
 
     @MockitoBean
-    private lateinit var characterService: CharacterService
+    private lateinit var fighterService: FighterService
 
     @MockitoBean
     private lateinit var restTemplate: RestTemplate
@@ -35,50 +35,50 @@ class CharacterControllerTest {
         .registerModule(JavaTimeModule())
 
     @Test
-    fun `getCharacters should call getCustomCharacters when custom is true`() {
-        whenever(characterService.getCustomCharacters()).thenReturn(emptyList())
+    fun `getFighters should call getCustomFighters when custom is true`() {
+        whenever(fighterService.getCustomFighters()).thenReturn(emptyList())
 
-        mockMvc.perform(get("/characters").param("custom", "true"))
+        mockMvc.perform(get("/Fighters").param("custom", "true"))
             .andExpect(status().isOk)
-        verify(characterService).getCustomCharacters()
+        verify(fighterService).getCustomFighters()
     }
 
     @Test
-    fun `getCharacters should return 404 when name not found`() {
+    fun `getFighters should return 404 when name not found`() {
         val name = "Unknown"
-        whenever(characterService.getCharacterByName(name))
-            .thenThrow(CharacterExceptions.NoCharacterFoundByNameException(name))
+        whenever(fighterService.getFighterByName(name))
+            .thenThrow(FighterExceptions.NoFighterFoundByNameException(name))
 
-        mockMvc.perform(get("/characters")
+        mockMvc.perform(get("/Fighters")
             .param("name", name))
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.errorCode").value("CHARACTER_NOT_FOUND_BY_NAME"))
+            .andExpect(jsonPath("$.errorCode").value("Fighter_NOT_FOUND_BY_NAME"))
     }
 
     @Test
-    fun `postCharacters should return 400 when game name is too short`() {
-        val invalidCharacter = CharacterDto(name = "S", game = "SF")
+    fun `postFighters should return 400 when game name is too short`() {
+        val invalidFighter = FighterDto(name = "S", game = "SF")
 
-        whenever(characterService.saveCharacter(any()))
-            .thenThrow(CharacterExceptions.InvalidCharacterException(
-                id = invalidCharacter.id ?: 0, emptyMap())
+        whenever(fighterService.saveFighter(any()))
+            .thenThrow(FighterExceptions.InvalidFighterException(
+                id = invalidFighter.id ?: 0, emptyMap())
             )
 
-        mockMvc.perform(post("/characters")
+        mockMvc.perform(post("/Fighters")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidCharacter)))
+            .content(objectMapper.writeValueAsString(invalidFighter)))
             .andExpect(status().isBadRequest)
     }
 
     @Test
-    fun `putCharacters should return 200 on success`() {
-        val characterDto = CharacterDto(id = 1, name = "Ryu", game = "Street Fighter")
-        whenever(characterService.updateCharacter(any()))
-            .thenReturn(characterDto)
+    fun `putFighters should return 200 on success`() {
+        val fighterDto = FighterDto(id = 1, name = "Ryu", game = "Street Fighter")
+        whenever(fighterService.updateFighter(any()))
+            .thenReturn(fighterDto)
 
-        mockMvc.perform(put("/characters")
+        mockMvc.perform(put("/Fighters")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(characterDto)))
+            .content(objectMapper.writeValueAsString(fighterDto)))
             .andExpect(status().isOk)
     }
 }

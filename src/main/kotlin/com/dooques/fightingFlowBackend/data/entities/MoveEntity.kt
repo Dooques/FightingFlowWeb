@@ -21,7 +21,7 @@ data class MoveEntity(
     val dateCreated: Instant? = Instant.now(),
     val notation: String,
     val moveType: String,
-    val character: String,
+    val fighter: String,
     val game: String? = null,
     val controlTypeSF: SF6ControlType? = SF6ControlType.Invalid
 )
@@ -31,7 +31,7 @@ fun MoveEntity.toDto() = MoveDto(
     name = name,
     notation = notation,
     moveType = moveType,
-    character = character,
+    fighter = fighter,
     game = game,
     controlTypeSF = controlTypeSF
 )

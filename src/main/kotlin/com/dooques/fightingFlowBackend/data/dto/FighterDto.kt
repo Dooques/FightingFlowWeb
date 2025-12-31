@@ -1,10 +1,12 @@
 package com.dooques.fightingFlowBackend.data.dto
 
-import com.dooques.fightingFlowBackend.data.entities.CharacterEntity
+import com.dooques.fightingFlowBackend.data.entities.FighterEntity
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import org.hibernate.validator.constraints.Length
 import java.time.Instant
 
-data class CharacterDto(
+data class FighterDto(
     val id: Long? = 0,
 
     @field:Length(min = 3, max = 20, message = "Name must be between 3 and 20 characters long")
@@ -26,11 +28,12 @@ data class CharacterDto(
     val controlType: String? = "",
 
     val numpadNotation: Boolean? = false,
-    val uniqueMoves: String? = "",
+    @JdbcTypeCode(SqlTypes.JSON)
+    val uniqueMoves: List<String>? = emptyList(),
     val mutable: Boolean? = false
 )
 
-fun CharacterDto.toEntity() = CharacterEntity(
+fun FighterDto.toEntity() = FighterEntity(
     id = id,
     name = name,
     imageId = imageId ?: 0,
@@ -40,6 +43,6 @@ fun CharacterDto.toEntity() = CharacterEntity(
     game = game ?: "",
     controlType = controlType ?: "",
     numpadNotation = numpadNotation ?: false,
-    uniqueMoves = uniqueMoves ?: "",
+    uniqueMoves = uniqueMoves ?: emptyList(),
     mutable = mutable ?: false
 )

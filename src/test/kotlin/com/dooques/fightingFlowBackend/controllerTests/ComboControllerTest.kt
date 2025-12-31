@@ -123,44 +123,44 @@ class ComboControllerTest {
     }
 
     @Test
-    fun `getCombos with character param should return combo with character`() {
-        val character = "Kazuya"
+    fun `getCombos with Fighter param should return combo with Fighter`() {
+        val fighter = "Kazuya"
         val mockCombo = listOf(
-            ComboDto(character = character, title = "Advanced Combo", creator = "Other User"),
-            ComboDto(character = "Ryu", title = "Starter Combo", creator = "Other User")
+            ComboDto(fighter = fighter, title = "Advanced Combo", creator = "Other User"),
+            ComboDto(fighter = "Ryu", title = "Starter Combo", creator = "Other User")
         )
 
-        whenever(comboService.getCombosByCharacter(character))
-            .thenReturn(mockCombo.filter { it.character == character })
+        whenever(comboService.getCombosByFighter(fighter))
+            .thenReturn(mockCombo.filter { it.fighter == fighter })
 
-        mockMvc.perform(get("/combos?character=$character"))
+        mockMvc.perform(get("/combos?Fighter=$fighter"))
             .andExpect { (status().isOk) }
             .andExpect(jsonPath("$")
                 .value(hasSize<Any>(1)))
-            .andExpect(jsonPath("$[0].character")
-                .value(character))
+            .andExpect(jsonPath("$[0].Fighter")
+                .value(fighter))
 
-        verify(comboService).getCombosByCharacter(character)
+        verify(comboService).getCombosByFighter(fighter)
     }
 
     @Test
     fun `postCombos should return 400 when name is too short`() {
-        val invalidCharacterDto = ComboDto(title = "A", game = "B")
+        val invalidFighterDto = ComboDto(title = "A", game = "B")
 
         mockMvc.perform(post("/combos")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidCharacterDto)))
+            .content(objectMapper.writeValueAsString(invalidFighterDto)))
             .andExpect(jsonPath("$.title")
-                .value("Title must be between 5 and 40 characters long"))
+                .value("Title must be between 5 and 40 Fighters long"))
     }
 
     @Test
     fun `postCombos should return 400 and map containing errors when request is invalid`() {
-        val invalidCharacterDto = ComboDto(title = "A", game = "B")
+        val invalidFighterDto = ComboDto(title = "A", game = "B")
 
         mockMvc.perform(post("/combos")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidCharacterDto)))
+            .content(objectMapper.writeValueAsString(invalidFighterDto)))
             .andExpect(status().isBadRequest)
             .andExpect(jsonPath<Map<String, Any>>("$", isA(Map::class.java)))
             .andExpect(jsonPath("$.title").exists())

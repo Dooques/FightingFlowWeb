@@ -21,7 +21,7 @@ data class UserDto(
     @field:Pattern(regexp = "^[A-Za-z]+$", message = "Name must contain only letters")
     val name: String? = "",
     val likedCombos: List<String>? = emptyList(),
-    val characterList: List<String>? = emptyList()
+    val fighterList: List<String>? = emptyList()
 )
 
 fun UserDto.toEntity() = UserEntity(
@@ -33,5 +33,5 @@ fun UserDto.toEntity() = UserEntity(
     dob = dob ?: "",
     name = name ?: "",
     likedCombos = likedCombos ?: emptyList(),
-    characterList = characterList ?: emptyList()
+    fighterList = fighterList ?: emptyList()
 )

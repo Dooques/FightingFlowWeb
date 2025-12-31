@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ComboRepository: JpaRepository<ComboEntity, Long> {
-    fun findByCharacter(character: String): List<ComboEntity>
+    fun findByFighter(fighter: String): List<ComboEntity>
     fun getAllCombosByCreator(creator: String): List<ComboEntity>
     fun findAllByTitle(title: String): List<ComboEntity>
 }

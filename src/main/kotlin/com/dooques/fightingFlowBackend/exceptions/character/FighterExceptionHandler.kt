@@ -6,40 +6,40 @@ import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
-class CharacterExceptionHandler {
+class FighterExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun onCharacterNotFound(e: CharacterExceptions.NoCharacterFoundException) = mapOf(
+    fun onFighterNotFound(e: FighterExceptions.NoFighterFoundException) = mapOf(
         "errorCode" to "CHARACTER_NOT_FOUND",
         "message" to e.message
     )
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun onCharacterNotFoundByName(e: CharacterExceptions.NoCharacterFoundByNameException) = mapOf(
-        "errorCode" to "CHARACTER_NOT_FOUND_BY_NAME",
+    fun onFighterNotFoundByName(e: FighterExceptions.NoFighterFoundByNameException) = mapOf(
+        "errorCode" to "FIGHTER_NOT_FOUND_BY_NAME",
         "message" to e.message
     )
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    fun onNoCharactersFound(e: CharacterExceptions.NoCharactersFoundException) = mapOf(
-        "errorCode" to "NO_CHARACTERS_FOUND",
+    fun onNoFightersFound(e: FighterExceptions.NoFightersFoundException) = mapOf(
+        "errorCode" to "NO_FIGHTERS_FOUND",
         "message" to e.message
     )
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun onInvalidCharacter(e: CharacterExceptions.InvalidCharacterException) = mapOf(
-        "errorCode" to "INVALID_CHARACTER_DATA",
+    fun onInvalidFighters(e: FighterExceptions.InvalidFighterException) = mapOf(
+        "errorCode" to "INVALID_FIGHTER_DATA",
         "message" to e.message
     )
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    fun onCharacterAlreadyExists(e: CharacterExceptions.CharacterAlreadyExistsException) = mapOf(
-        "errorCode" to "CHARACTER_ALREADY_EXISTS",
+    fun onFighterAlreadyExists(e: FighterExceptions.FighterAlreadyExistsException) = mapOf(
+        "errorCode" to "Fighter_ALREADY_EXISTS",
         "message" to e.message
     )
 
