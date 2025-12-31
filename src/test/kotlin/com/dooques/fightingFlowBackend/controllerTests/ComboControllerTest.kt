@@ -31,13 +31,10 @@ import org.springframework.web.client.RestTemplate
 class ComboControllerTest {
     @Autowired
     private lateinit var mockMvc: MockMvc
-
     @Autowired
     private lateinit var controller: ComboController
-
     @MockitoBean
     private lateinit var comboService: ComboService
-
     @MockitoBean
     private lateinit var restTemplate: RestTemplate
 

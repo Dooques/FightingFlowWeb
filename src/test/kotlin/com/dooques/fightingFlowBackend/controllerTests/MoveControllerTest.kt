@@ -35,11 +35,11 @@ class MoveControllerTest {
         .registerModule(JavaTimeModule())
 
     @Test
-    fun `getMoves should return character moves when character param provided`() {
-        val character = "Jin"
-        whenever(moveService.getAllMovesByFighter(character)).thenReturn(listOf(MoveDto(name = "Electric", fighter = character)))
+    fun `getMoves should return Fighter moves when Fighter param provided`() {
+        val fighter = "Jin"
+        whenever(moveService.getAllMovesByFighter(fighter)).thenReturn(listOf(MoveDto(name = "Electric", fighter = fighter)))
 
-        mockMvc.perform(get("/moves").param("character", character))
+        mockMvc.perform(get("/moves").param("Fighter", fighter))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].name").value("Electric"))
     }
