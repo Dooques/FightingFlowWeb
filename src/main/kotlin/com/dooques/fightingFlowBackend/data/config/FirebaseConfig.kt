@@ -7,18 +7,18 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import java.io.FileInputStream
 
-@Configuration
-class FirebaseConfig {
-
-    @Bean
-    fun firebaseApp(): FirebaseApp {
-
-        val serviceAccount = FileInputStream(System.getenv("SERVICE_KEY_PATH"))
-
-        val options = FirebaseOptions.builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            .build()
-
-        return FirebaseApp.initializeApp(options)
-    }
-}
+//@Configuration
+//class FirebaseConfig {
+//
+//    @Bean
+//    fun firebaseApp(): FirebaseApp {
+//
+//        val serviceAccount = FileInputStream(System.getenv("SERVICE_KEY_PATH"))
+//
+//        val options = FirebaseOptions.builder()
+//            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+//            .build()
+//
+//        return FirebaseApp.initializeApp(options)
+//    }
+//}

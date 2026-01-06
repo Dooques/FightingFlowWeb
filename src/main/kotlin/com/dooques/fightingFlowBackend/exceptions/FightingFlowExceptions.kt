@@ -9,7 +9,7 @@ class FightingFlowExceptions {
         ) : RuntimeException("Invalid item $type for id $id with these problems: $problems")
 
     open class NoItemFoundException(
-        type: String, id: Long
+        type: String, id: Any
     ) : RuntimeException("No $type with ID $id could be found")
 
     open class NoItemFoundByNameException(

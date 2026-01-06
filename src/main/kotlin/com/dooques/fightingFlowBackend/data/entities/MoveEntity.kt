@@ -16,12 +16,12 @@ data class MoveEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    val name: String,
+    val name: String = "",
     @CreationTimestamp
     val dateCreated: Instant? = Instant.now(),
-    val notation: String,
-    val moveType: String,
-    val fighter: String,
+    val notation: String = "",
+    val type: String = "",
+    val fighter: String = "",
     val game: String? = null,
     val controlTypeSF: SF6ControlType? = SF6ControlType.Invalid
 )
@@ -30,7 +30,7 @@ fun MoveEntity.toDto() = MoveDto(
     id = id,
     name = name,
     notation = notation,
-    moveType = moveType,
+    type = type,
     fighter = fighter,
     game = game,
     controlTypeSF = controlTypeSF

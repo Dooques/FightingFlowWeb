@@ -6,6 +6,7 @@ import com.dooques.fightingFlowBackend.data.entities.FighterEntity
 import com.dooques.fightingFlowBackend.data.entities.toDto
 import com.dooques.fightingFlowBackend.data.repository.FighterRepository
 import com.dooques.fightingFlowBackend.exceptions.character.FighterExceptions
+import com.dooques.fightingFlowBackend.exceptions.move.MoveExceptions
 import org.springframework.stereotype.Service
 
 @Service
@@ -65,16 +66,30 @@ class FighterService(
 
     // Action Functions
 
-    fun saveFighter(fighterDto: FighterDto): FighterDto {
-        // Search for existing characters, if none found, save new character.
-        runCatching { getFighterByName(fighterDto.name) }
+    fun postFighter(
+        fighterDto: FighterDto,
+        postMultiple: Boolean = false
+    ): FighterDto {
+        // Search for existing characters, save or update them based on input.
+        var originalFighter: FighterDto? = null
+        runCatching {
+            println("Saving Fighter: $fighterDto")
+            originalFighter = getFighterByName(fighterDto.name)
+        }
             .onFailure {
+                println("No existing fighters found, saving new fighter.")
                 return fighterRepository
                     .save(fighterDto.toEntity().apply { id = 0 })
                     .toDto()
             }
             .onSuccess {
-                throw FighterExceptions.FighterAlreadyExistsException()
+                println("Existing fighter found.")
+                if (postMultiple && originalFighter != null) {
+                    if (fighterDto != originalFighter)
+                        return updateFighter(fighterDto)
+                } else {
+                   throw MoveExceptions.MoveAlreadyExistsException()
+                }
             }
        throw FighterExceptions.PostFunctionFailedException("Failed without reason")
     }
@@ -100,7 +115,7 @@ class FighterService(
 
             updatedCharacter = originalFighter.copy(
                 imageId = fighterDto.imageId?.takeIf { it != originalFighter.imageId } ?: originalFighter.imageId,
-                imageUri = fighterDto.imageUri?.takeIf { it != originalFighter.imageUri } ?: originalFighter.imageUri,
+                imageUrl = fighterDto.imageUrl?.takeIf { it != originalFighter.imageUrl } ?: originalFighter.imageUrl,
                 fightingStyle = fighterDto.fightingStyle?.takeIf { it != originalFighter.fightingStyle } ?: originalFighter.fightingStyle,
                 combosById = fighterDto.combosById?.takeIf { it != originalFighter.combosById } ?: originalFighter.combosById,
                 game = fighterDto.game?.takeIf { it != originalFighter.game } ?: originalFighter.game,

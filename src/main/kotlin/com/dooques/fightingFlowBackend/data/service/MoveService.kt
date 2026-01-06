@@ -2,7 +2,6 @@ package com.dooques.fightingFlowBackend.data.service
 
 import com.dooques.fightingFlowBackend.data.dto.MoveDto
 import com.dooques.fightingFlowBackend.data.dto.toEntity
-import com.dooques.fightingFlowBackend.data.entities.MoveEntity
 import com.dooques.fightingFlowBackend.data.entities.toDto
 import com.dooques.fightingFlowBackend.data.repository.MoveRepository
 import com.dooques.fightingFlowBackend.exceptions.FightingFlowExceptions
@@ -10,7 +9,9 @@ import com.dooques.fightingFlowBackend.exceptions.move.MoveExceptions
 import org.springframework.stereotype.Service
 
 @Service
-class MoveService(private val moveRepository: MoveRepository) {
+class MoveService(
+    private val moveRepository: MoveRepository
+) {
 
     /*
     ---------------------------
@@ -18,18 +19,16 @@ class MoveService(private val moveRepository: MoveRepository) {
     ---------------------------
     */
 
-    fun getMoveById(id: Long): MoveDto =
-        moveRepository.findById(id)
-            .map(MoveEntity::toDto)
-            .orElseThrow {
-                val error = MoveExceptions.NoMoveFoundException(id)
-                println(error.message)
-                error
+    fun getMovesByName(name: String): List<MoveDto> =
+        moveRepository.findAllByName(name)
+            .map { it.toDto() }
+            .ifEmpty {
+                throw MoveExceptions.NoMoveFoundException(name)
             }
 
     fun getAllMoves(): List<MoveDto> =
         moveRepository.findAll()
-            .map(MoveEntity::toDto)
+            .map { it.toDto() }
             .ifEmpty {
                 val error = MoveExceptions.NoMovesFoundException()
                 println(error.message)
@@ -38,7 +37,7 @@ class MoveService(private val moveRepository: MoveRepository) {
 
     fun getAllMovesByFighter(fighter: String): List<MoveDto> =
          moveRepository.getAllMovesByFighter(fighter)
-            .map(MoveEntity::toDto)
+            .map { it.toDto() }
             .ifEmpty {
                 val error = MoveExceptions.NoMovesFoundException()
                 println(error.message)
@@ -47,7 +46,7 @@ class MoveService(private val moveRepository: MoveRepository) {
 
     fun getAllMovesByGame(game: String): List<MoveDto> {
         return moveRepository.getAllMovesByGame(game)
-            .map(MoveEntity::toDto)
+            .map { it.toDto() }
             .ifEmpty {
                 val error = MoveExceptions.NoMovesFoundException()
                 println(error.message)
@@ -61,24 +60,40 @@ class MoveService(private val moveRepository: MoveRepository) {
    ---------------------------
    */
 
-    fun postMove(moveDto: MoveDto): MoveDto {
+    fun postMove(
+        moveDto: MoveDto,
+        postMultiple: Boolean = false
+    ): MoveDto {
+        // Search for existing moves, save or update them based on input
+        var originalMove: MoveDto? = null
         runCatching {
-            getMoveById(moveDto.id ?: throw FightingFlowExceptions.InvalidIdException())
+            println("Saving Move: $moveDto")
+            originalMove = getMovesByName(
+                moveDto.name ?: throw FightingFlowExceptions.InvalidIdException()
+            ).firstOrNull()
         }
-            .onFailure {
-
-                println("""
-                **************************************
-                    Posting Move: $moveDto
-                **************************************
-                """)
-
-                return moveRepository.save(moveDto.toEntity()).toDto()
+            .onFailure { e ->
+                if (e is FightingFlowExceptions.InvalidIdException) {
+                    throw e
+                } else {
+                    println("No existing moves found, saving new move.")
+                    return moveRepository
+                        .save(moveDto.toEntity())
+                        .toDto()
+                }
             }
             .onSuccess {
+                println("Existing move found.")
                 val error = MoveExceptions.MoveAlreadyExistsException()
                 println(error.message)
-                throw error
+                if (postMultiple && originalMove != null) {
+                    if (moveDto != originalMove)
+                        return moveRepository
+                            .save(moveDto.toEntity())
+                            .toDto()
+                } else {
+                    throw error
+                }
             }
         val error = MoveExceptions.PostFunctionFailedException("Failed without reason")
         println(error.message)
@@ -89,13 +104,13 @@ class MoveService(private val moveRepository: MoveRepository) {
         var updatedMove = MoveDto()
 
         runCatching {
-            val originalMove = getMoveById(
-                moveDto.id ?: throw FightingFlowExceptions.InvalidIdException()
-            )
+            val originalMove = getMovesByName(
+                moveDto.name ?: throw FightingFlowExceptions.InvalidIdException()
+            ).firstOrNull() ?: throw MoveExceptions.NoMoveFoundException(moveDto.name ?: "")
 
             if (originalMove == moveDto) {
                 throw MoveExceptions.InvalidMoveException(
-                    moveDto.id,
+                    moveDto.id ?: 0,
                     mapOf("Invalid Change" to "No changes detected")
                 )
             }
@@ -108,9 +123,9 @@ class MoveService(private val moveRepository: MoveRepository) {
             """)
 
             updatedMove = moveDto.copy(
-                name = moveDto.name?.takeIf { it != originalMove.name } ?: originalMove.name,
+                name = moveDto.name.takeIf { it != originalMove.name } ?: originalMove.name,
                 notation = moveDto.notation?.takeIf { it != originalMove.notation } ?: originalMove.notation,
-                moveType = moveDto.moveType?.takeIf { it != originalMove.moveType } ?: originalMove.moveType,
+                type = moveDto.type?.takeIf { it != originalMove.type } ?: originalMove.type,
             )
         }
             .onSuccess {
@@ -128,9 +143,10 @@ class MoveService(private val moveRepository: MoveRepository) {
         throw error
     }
 
-    fun deleteMove(id: Long) {
+    fun deleteMove(name: String) {
         runCatching {
-            val move = getMoveById(id)
+            val move = getMovesByName(name)
+                .firstOrNull() ?: throw MoveExceptions.NoMoveFoundException(name)
             moveRepository.delete(move.toEntity())
         }
             .onFailure {
@@ -138,5 +154,9 @@ class MoveService(private val moveRepository: MoveRepository) {
                 println(error.message)
                 throw error
             }
+    }
+
+    fun deleteAllMoves() {
+        moveRepository.deleteAll()
     }
 }

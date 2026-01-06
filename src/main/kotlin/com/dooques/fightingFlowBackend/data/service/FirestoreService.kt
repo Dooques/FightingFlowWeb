@@ -6,13 +6,13 @@ import com.google.firebase.cloud.FirestoreClient
 import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Service
 
-@Service
-class FirestoreService(private val firebaseApp: FirebaseApp) {
-    private lateinit var db: Firestore
-
-    @PostConstruct
-    fun init() {
-        db = FirestoreClient.getFirestore()
-    }
-
-}
+//@Service
+//class FirestoreService(private val firebaseApp: FirebaseApp) {
+//    private lateinit var db: Firestore
+//
+//    @PostConstruct
+//    fun init() {
+//        db = FirestoreClient.getFirestore()
+//    }
+//
+//}

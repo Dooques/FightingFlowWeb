@@ -14,7 +14,7 @@ data class FighterDto(
 
     val dateCreated: Instant? = Instant.now(),
     val imageId: Int? = 0,
-    val imageUri: String? = "",
+    val imageUrl: String? = "",
 
     @field:Length(min = 3, max = 50, message = "Fighting style must be between 3 and 50 characters long")
     val fightingStyle: String? = "",
@@ -37,7 +37,7 @@ fun FighterDto.toEntity() = FighterEntity(
     id = id,
     name = name,
     imageId = imageId ?: 0,
-    imageUri = imageUri ?: "",
+    imageUri = imageUrl ?: "",
     fightingStyle = fightingStyle ?: "",
     combosById = combosById ?: emptyList(),
     game = game ?: "",

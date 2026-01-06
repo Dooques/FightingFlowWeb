@@ -26,7 +26,9 @@ class FightingFlowExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun onValidationFailed(e: MethodArgumentNotValidException): ResponseEntity<Map<String, Any>> {
+    fun onValidationFailed(
+        e: MethodArgumentNotValidException
+    ): ResponseEntity<Map<String, Any>> {
         val map = mutableMapOf<String, Any>()
 
         e.bindingResult.fieldErrors.forEach { error ->
@@ -40,6 +42,13 @@ class FightingFlowExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     fun onIllegalArgumentException(e: IllegalArgumentException) = mapOf(
         "errorCode" to "INVALID_ARGUMENT",
+        "message" to e.message
+    )
+
+    @ExceptionHandler(FightingFlowExceptions.ItemFunctionFailedException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun onItemFunctionFailed(e: FightingFlowExceptions.ItemFunctionFailedException) = mapOf(
+        "errorCode" to "ITEM_ACTION_FAILED",
         "message" to e.message
     )
 }

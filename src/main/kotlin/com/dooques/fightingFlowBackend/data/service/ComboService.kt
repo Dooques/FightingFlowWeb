@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class ComboService(
     private val comboRepository: ComboRepository,
-    private val quotesConfig: DatabaseConfig.ValidationConfig
+    private val databaseConfig: DatabaseConfig.ValidationConfig
 ) {
     /*
     ---------------------------

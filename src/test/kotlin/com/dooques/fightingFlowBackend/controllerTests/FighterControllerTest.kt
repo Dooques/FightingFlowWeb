@@ -20,25 +20,28 @@ import org.springframework.web.client.RestTemplate
 
 @WebMvcTest(FighterController::class)
 class FighterControllerTest {
-
     @Autowired
     private lateinit var mockMvc: MockMvc
-
     @MockitoBean
     private lateinit var fighterService: FighterService
-
     @MockitoBean
     private lateinit var restTemplate: RestTemplate
+    @MockitoBean
+    private lateinit var objectMapper : ObjectMapper
 
-    private val objectMapper = ObjectMapper()
+    private val testMapper = ObjectMapper()
         .registerModule(KotlinModule.Builder().build())
         .registerModule(JavaTimeModule())
 
     @Test
     fun `getFighters should call getCustomFighters when custom is true`() {
-        whenever(fighterService.getCustomFighters()).thenReturn(emptyList())
+        whenever(fighterService.getCustomFighters())
+            .thenReturn(listOf(
+                FighterDto(name = "Ryu", game = "Street Fighter"),
+            ))
 
-        mockMvc.perform(get("/Fighters").param("custom", "true"))
+        mockMvc.perform(get("/fighters")
+            .param("custom", "true"))
             .andExpect(status().isOk)
         verify(fighterService).getCustomFighters()
     }
@@ -49,36 +52,44 @@ class FighterControllerTest {
         whenever(fighterService.getFighterByName(name))
             .thenThrow(FighterExceptions.NoFighterFoundByNameException(name))
 
-        mockMvc.perform(get("/Fighters")
+        mockMvc.perform(get("/fighters")
             .param("name", name))
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.errorCode").value("Fighter_NOT_FOUND_BY_NAME"))
+            .andExpect(jsonPath("$.errorCode")
+                .value("FIGHTER_NOT_FOUND_BY_NAME"))
     }
 
     @Test
     fun `postFighters should return 400 when game name is too short`() {
-        val invalidFighter = FighterDto(name = "S", game = "SF")
+        val invalidFighter = FighterDto(id = 1, name = "S", game = "SF")
 
-        whenever(fighterService.saveFighter(any()))
+        whenever(fighterService
+            .postFighter(fighterDto = invalidFighter, false))
             .thenThrow(FighterExceptions.InvalidFighterException(
                 id = invalidFighter.id ?: 0, emptyMap())
             )
 
-        mockMvc.perform(post("/Fighters")
+        mockMvc.perform(post("/fighters")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(invalidFighter)))
+            .content(testMapper.writeValueAsString(invalidFighter)))
             .andExpect(status().isBadRequest)
     }
 
     @Test
     fun `putFighters should return 200 on success`() {
-        val fighterDto = FighterDto(id = 1, name = "Ryu", game = "Street Fighter")
-        whenever(fighterService.updateFighter(any()))
+        val fighterDto = FighterDto(
+            name = "Kazuya",
+            fightingStyle = "Karate",
+            game = "Street Fighter",
+            controlType = "Tekken"
+        )
+
+        whenever(fighterService.updateFighter(fighterDto))
             .thenReturn(fighterDto)
 
-        mockMvc.perform(put("/Fighters")
+        mockMvc.perform(put("/fighters")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(fighterDto)))
+            .content(testMapper.writeValueAsString(fighterDto)))
             .andExpect(status().isOk)
     }
 }

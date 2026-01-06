@@ -130,11 +130,11 @@ class ComboControllerTest {
         whenever(comboService.getCombosByFighter(fighter))
             .thenReturn(mockCombo.filter { it.fighter == fighter })
 
-        mockMvc.perform(get("/combos?Fighter=$fighter"))
+        mockMvc.perform(get("/combos?fighter=$fighter"))
             .andExpect { (status().isOk) }
             .andExpect(jsonPath("$")
                 .value(hasSize<Any>(1)))
-            .andExpect(jsonPath("$[0].Fighter")
+            .andExpect(jsonPath("$[0].fighter")
                 .value(fighter))
 
         verify(comboService).getCombosByFighter(fighter)
@@ -148,7 +148,7 @@ class ComboControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(invalidFighterDto)))
             .andExpect(jsonPath("$.title")
-                .value("Title must be between 5 and 40 Fighters long"))
+                .value("Title must be between 5 and 40 characters long"))
     }
 
     @Test

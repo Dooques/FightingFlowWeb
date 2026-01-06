@@ -11,7 +11,7 @@ object MoveExceptions {
         id: Long, problems: Map<String, Any>,
     ) : InvalidItemException("move", id, problems)
 
-    class NoMoveFoundException(id: Long) : NoItemFoundException("move", id)
+    class NoMoveFoundException(name: String) : NoItemFoundException("move", name)
 
     class NoMovesFoundException : NoItemsFoundException("move")
 

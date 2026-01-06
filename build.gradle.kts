@@ -1,9 +1,8 @@
 import org.gradle.kotlin.dsl.testImplementation
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	kotlin("jvm") version "2.3.0"
-	kotlin("plugin.spring") version "2.3.0"
+	id("org.jetbrains.kotlin.jvm") version "2.3.0"
+	id("org.jetbrains.kotlin.plugin.spring") version "2.3.0"
 	id("org.springframework.boot") version "4.0.0"
 	id("io.spring.dependency-management") version "1.1.7"
 }
@@ -51,8 +50,4 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-	freeCompilerArgs.set(listOf("-XXLanguage:+NestedTypeAliases"))
 }

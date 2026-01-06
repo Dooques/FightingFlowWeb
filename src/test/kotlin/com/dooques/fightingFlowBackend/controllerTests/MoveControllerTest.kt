@@ -37,9 +37,12 @@ class MoveControllerTest {
     @Test
     fun `getMoves should return Fighter moves when Fighter param provided`() {
         val fighter = "Jin"
-        whenever(moveService.getAllMovesByFighter(fighter)).thenReturn(listOf(MoveDto(name = "Electric", fighter = fighter)))
+        whenever(moveService
+            .getAllMovesByFighter(fighter))
+            .thenReturn(listOf(MoveDto(name = "Electric", fighter = fighter)))
 
-        mockMvc.perform(get("/moves").param("Fighter", fighter))
+        mockMvc.perform(get("/moves")
+            .param("Fighter", fighter))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].name").value("Electric"))
     }
@@ -66,9 +69,9 @@ class MoveControllerTest {
 
     @Test
     fun `deleteMoves should return 200 on success`() {
-        val id = 5L
-        mockMvc.perform(delete("/moves/$id"))
+        val name = "Reina"
+        mockMvc.perform(delete("/moves/?name=$name"))
             .andExpect(status().isOk)
-        verify(moveService).deleteMove(id)
+        verify(moveService).deleteMove(name)
     }
 }
