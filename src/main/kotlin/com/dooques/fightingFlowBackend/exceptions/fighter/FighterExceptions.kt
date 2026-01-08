@@ -1,4 +1,4 @@
-package com.dooques.fightingFlowBackend.exceptions.character
+package com.dooques.fightingFlowBackend.exceptions.fighter
 
 import com.dooques.fightingFlowBackend.exceptions.FightingFlowExceptions
 

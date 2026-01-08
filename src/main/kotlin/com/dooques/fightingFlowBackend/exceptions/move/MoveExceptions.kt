@@ -8,8 +8,8 @@ import com.dooques.fightingFlowBackend.exceptions.FightingFlowExceptions.NoItems
 
 object MoveExceptions {
     class InvalidMoveException(
-        id: Long, problems: Map<String, Any>,
-    ) : InvalidItemException("move", id, problems)
+        name: String, problems: Map<String, Any>,
+    ) : InvalidItemException("move", name, problems)
 
     class NoMoveFoundException(name: String) : NoItemFoundException("move", name)
 

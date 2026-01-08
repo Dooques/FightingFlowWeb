@@ -19,9 +19,9 @@ data class MoveEntity(
     val name: String = "",
     @CreationTimestamp
     val dateCreated: Instant? = Instant.now(),
-    val notation: String = "",
-    val type: String = "",
-    val fighter: String = "",
+    val notation: String? = "",
+    val type: String? = "",
+    val fighter: String? = "",
     val game: String? = null,
     val controlTypeSF: SF6ControlType? = SF6ControlType.Invalid
 )

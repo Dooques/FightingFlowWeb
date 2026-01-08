@@ -5,7 +5,7 @@ import com.dooques.fightingFlowBackend.data.dto.toEntity
 import com.dooques.fightingFlowBackend.data.entities.FighterEntity
 import com.dooques.fightingFlowBackend.data.entities.toDto
 import com.dooques.fightingFlowBackend.data.repository.FighterRepository
-import com.dooques.fightingFlowBackend.exceptions.character.FighterExceptions
+import com.dooques.fightingFlowBackend.exceptions.fighter.FighterExceptions
 import com.dooques.fightingFlowBackend.exceptions.move.MoveExceptions
 import org.springframework.stereotype.Service
 
@@ -161,5 +161,9 @@ class FighterService(
                 println(error.message)
                 throw error
             }
+    }
+
+    fun deleteAllFighters() {
+        fighterRepository.deleteAll()
     }
 }

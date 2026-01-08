@@ -3,7 +3,7 @@ package com.dooques.fightingFlowBackend.controllerTests
 import com.dooques.fightingFlowBackend.controllers.FighterController
 import com.dooques.fightingFlowBackend.data.dto.FighterDto
 import com.dooques.fightingFlowBackend.data.service.FighterService
-import com.dooques.fightingFlowBackend.exceptions.character.FighterExceptions
+import com.dooques.fightingFlowBackend.exceptions.fighter.FighterExceptions
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule

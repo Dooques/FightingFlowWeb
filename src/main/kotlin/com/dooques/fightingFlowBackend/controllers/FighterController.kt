@@ -2,7 +2,7 @@ package com.dooques.fightingFlowBackend.controllers
 
 import com.dooques.fightingFlowBackend.data.dto.FighterDto
 import com.dooques.fightingFlowBackend.data.service.FighterService
-import com.dooques.fightingFlowBackend.exceptions.character.FighterExceptions
+import com.dooques.fightingFlowBackend.exceptions.fighter.FighterExceptions
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -59,62 +59,67 @@ class FighterController(
 
     @PostMapping
     fun postFighter(
-        @Valid @RequestBody fighterData: Any
+        @Valid @RequestBody fighterData: FighterDto
     ): Any {
-        return when (fighterData) {
-            is FighterDto -> {
-                println("""
+
+        println(
+            """
                 ******************************************** 
                     Posting Fighter: $fighterData
-                """)
-                fighterService.postFighter(fighterData)
-            }
+                """
+        )
+        return fighterService.postFighter(fighterData)
+    }
 
-            is List<*> -> {
-                println("""
+    @PostMapping("/bulk")
+    fun postFighters(
+        @Valid @RequestBody fighterData: List<FighterDto>
+    ): List<FighterDto> {
+        println(
+            """
                 ******************************************** 
                     Posting Fighters: $fighterData
                 ******************************************** 
-                """)
-                val fighters: List<FighterDto> =
-                    objectMapper.convertValue(from = fighterData)
-                fighters.map {
-                    println(it.toString())
-                    val fighter = fighterService.postFighter(it)
-                    println("Fighter Saved\n")
-                    fighter
-                }
-            }
-
-            else -> {
-                throw FighterExceptions.InvalidFighterException(0, mapOf("Invalid Fighter Data" to fighterData))
-            }
+                """
+        )
+        val fighters: List<FighterDto> =
+            objectMapper.convertValue(from = fighterData)
+        return fighters.map {
+            println(it.toString())
+            val fighter = fighterService.postFighter(it, true)
+            println("Fighter Saved\n")
+            fighter
         }
     }
 
     @PutMapping
     fun putFighter(
-        @RequestBody fighterData : Any
-    ): Any {
-        return when (fighterData) {
-            is FighterDto -> {
-                println("""
+        @RequestBody fighterData : FighterDto
+    ): FighterDto {
+        println(
+            """
                 ******************************************** 
                     Updating Fighter: $fighterData
-                """)
-                fighterService.updateFighter(fighterData)
-            }
-            is List<*> -> {
-                fighterData.map { fighterService.updateFighter(it as FighterDto) }
-            }
-            else -> {
-                throw FighterExceptions.InvalidFighterException(0, mapOf("Invalid Fighter Data" to fighterData))
-            }
+                """
+        )
+        return fighterService.updateFighter(fighterData)
+    }
+    @PutMapping("/bulk")
+    fun putMultipleFighters(
+        @RequestBody fighterData : List<FighterDto>
+    ): List<FighterDto> {
+        return fighterData.map {
+            fighterService.updateFighter(it)
         }
     }
 
     @DeleteMapping("/{id}")
     fun deleteFighter(@PathVariable id: Long) {
         fighterService.deleteFighter(id)
+    }
+
+    @DeleteMapping("/all")
+    fun deleteAllFighters() {
+        fighterService.deleteAllFighters()
     }
 }

@@ -1,4 +1,4 @@
-package com.dooques.fightingFlowBackend.exceptions.character
+package com.dooques.fightingFlowBackend.exceptions.fighter
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler

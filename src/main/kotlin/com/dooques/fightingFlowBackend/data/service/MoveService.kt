@@ -69,7 +69,8 @@ class MoveService(
         runCatching {
             println("Saving Move: $moveDto")
             originalMove = getMovesByName(
-                moveDto.name ?: throw FightingFlowExceptions.InvalidIdException()
+                moveDto.name ?: throw
+                FightingFlowExceptions.InvalidIdException()
             ).firstOrNull()
         }
             .onFailure { e ->
@@ -110,7 +111,7 @@ class MoveService(
 
             if (originalMove == moveDto) {
                 throw MoveExceptions.InvalidMoveException(
-                    moveDto.id ?: 0,
+                    moveDto.name,
                     mapOf("Invalid Change" to "No changes detected")
                 )
             }

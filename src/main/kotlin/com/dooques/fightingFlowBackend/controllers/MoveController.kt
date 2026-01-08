@@ -45,58 +45,56 @@ class MoveController(
     }
 
     @PostMapping
-    fun postMoves(
-        @Valid @RequestBody moveData: Any
-    ): Any {
+    fun postMove(
+        @Valid @RequestBody moveData: MoveDto
+    ): MoveDto {
         println("Posting Move: $moveData")
-        return when (moveData) {
-            is MoveDto -> {
                 println("********************************************\n" +
                         "       Posting Move: $moveData\n")
-                moveService.postMove(moveData)
-            }
-            is List<*> -> {
-                println("******************************************** \n" +
-                        "       Posting Moves: $moveData\n" +
-                        "********************************************")
-                val moves: List<MoveDto> =
-                    objectMapper.convertValue(from = moveData)
-                moves.map {
-                    println(it.toString())
-                    val move = moveService.postMove(
-                        moveDto = it,
-                        postMultiple =  true
-                    )
-                    move
-                }
-            }
-            else -> {
-                throw MoveExceptions.InvalidMoveException(
-                    0, mapOf("Invalid Move Data" to moveData))
-            }
+                return moveService.postMove(moveData)
+    }
+    @PostMapping("/bulk")
+    fun postMoves(
+        @Valid @RequestBody moveData: MoveDto
+    ): List<MoveDto> {
+        println(
+            "******************************************** \n" +
+                    "       Posting Moves: $moveData\n" +
+                    "********************************************")
+        val moves: List<MoveDto> =
+            objectMapper.convertValue(from = moveData)
+        return moves.map { move ->
+            println(move.toString())
+            val move = moveService.postMove(
+                moveDto = move,
+                postMultiple =  true
+            )
+            move
         }
     }
 
     @PutMapping
-    fun putMoves(
+    fun putMove(
         @RequestBody moveDto: MoveDto
     ): MoveDto {
         return moveService.updateMove(moveDto)
     }
 
-    @DeleteMapping
-    fun deleteMoves(
+    @DeleteMapping()
+    fun deleteMove(
         @RequestParam name: String? = null,
-        @RequestParam deleteAll: Boolean? = null
     ) {
-        if (deleteAll != null) {
-            moveService.deleteAllMoves()
-        } else if (name != null) {
+        if (name != null) {
             moveService.deleteMove(name)
         } else {
-            throw MoveExceptions.DeleteFunctionFailedException(
-                "No ID or Delete All Flag Provided."
-            )
+            throw MoveExceptions.InvalidMoveException("null", mapOf("name" to "null"))
         }
+
+    }
+
+    @DeleteMapping("/all")
+    fun deleteMove(
+    ) {
+        moveService.deleteAllMoves()
     }
 }
